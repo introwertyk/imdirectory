@@ -1,25 +1,50 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iMDirectory", "iMDirectory\iMDirectory.csproj", "{7E2BCF22-7B16-447C-90C2-AC836BDDB064}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DB6F74E8-03C0-4B2A-8EBC-ADF6A801173C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsService", "WindowsService\WindowsService.csproj", "{A8DC74EF-298C-4245-9B7C-0AA8C95B696E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iMDirectory", "ClassLibrary\iMDirectory.csproj", "{86FEEFDC-84BD-4DEC-BB58-F40CA583080E}"
+EndProject
 Global
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|ARM = Debug|ARM
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|ARM = Release|ARM
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7E2BCF22-7B16-447C-90C2-AC836BDDB064}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7E2BCF22-7B16-447C-90C2-AC836BDDB064}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7E2BCF22-7B16-447C-90C2-AC836BDDB064}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7E2BCF22-7B16-447C-90C2-AC836BDDB064}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8DC74EF-298C-4245-9B7C-0AA8C95B696E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8DC74EF-298C-4245-9B7C-0AA8C95B696E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8DC74EF-298C-4245-9B7C-0AA8C95B696E}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{A8DC74EF-298C-4245-9B7C-0AA8C95B696E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A8DC74EF-298C-4245-9B7C-0AA8C95B696E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A8DC74EF-298C-4245-9B7C-0AA8C95B696E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8DC74EF-298C-4245-9B7C-0AA8C95B696E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8DC74EF-298C-4245-9B7C-0AA8C95B696E}.Release|ARM.ActiveCfg = Release|Any CPU
+		{A8DC74EF-298C-4245-9B7C-0AA8C95B696E}.Release|x64.ActiveCfg = Release|Any CPU
+		{A8DC74EF-298C-4245-9B7C-0AA8C95B696E}.Release|x86.ActiveCfg = Release|Any CPU
+		{86FEEFDC-84BD-4DEC-BB58-F40CA583080E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86FEEFDC-84BD-4DEC-BB58-F40CA583080E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86FEEFDC-84BD-4DEC-BB58-F40CA583080E}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{86FEEFDC-84BD-4DEC-BB58-F40CA583080E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{86FEEFDC-84BD-4DEC-BB58-F40CA583080E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{86FEEFDC-84BD-4DEC-BB58-F40CA583080E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86FEEFDC-84BD-4DEC-BB58-F40CA583080E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86FEEFDC-84BD-4DEC-BB58-F40CA583080E}.Release|ARM.ActiveCfg = Release|Any CPU
+		{86FEEFDC-84BD-4DEC-BB58-F40CA583080E}.Release|x64.ActiveCfg = Release|Any CPU
+		{86FEEFDC-84BD-4DEC-BB58-F40CA583080E}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal
