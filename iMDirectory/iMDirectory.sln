@@ -5,7 +5,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsService", "WindowsService\WindowsService.csproj", "{A8DC74EF-298C-4245-9B7C-0AA8C95B696E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iMDirectory", "ClassLibrary\iMDirectory.csproj", "{86FEEFDC-84BD-4DEC-BB58-F40CA583080E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary", "ClassLibrary\ClassLibrary.csproj", "{86FEEFDC-84BD-4DEC-BB58-F40CA583080E}"
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution

@@ -63,9 +63,9 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ClassLibrary\iMDirectory.csproj">
+    <ProjectReference Include="..\ClassLibrary\ClassLibrary.csproj">
       <Project>{86feefdc-84bd-4dec-bb58-f40ca583080e}</Project>
-      <Name>iMDirectory</Name>
+      <Name>ClassLibrary</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
