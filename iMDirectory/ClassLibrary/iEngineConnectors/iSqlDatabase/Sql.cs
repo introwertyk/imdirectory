@@ -11,82 +11,66 @@ namespace iMDirectory.iEngineConnectors.iSqlDatabase
 	/// </summary>
 	public class Sql : IDisposable
 	{
+		#region Constants
+		int CMD_TIMEOUT=300;
+		#endregion
+
 		#region Variables
 		private bool bDisposed;
 
-		private int iCommandTimeout = 300;
-		private string sConnectionString;
-		private System.Data.SqlClient.SqlConnection oSqlConnection;
-
-
 		public int CommandTimeout
 		{
-			get
-			{
-				return this.iCommandTimeout;
-			}
-			set
-			{
-				this.iCommandTimeout = value;
-			}
+			get;
+			set;
 		}
 		public string ConnectionString
 		{
-			get
-			{
-				return this.sConnectionString;
-			}
-			set
-			{
-				this.sConnectionString = value;
-			}
+			get;
+			set;
 		}
-		public System.Data.SqlClient.SqlConnection sqlConnection
+		public System.Data.SqlClient.SqlConnection SqlConnection
 		{
-			get
-			{
-				return this.oSqlConnection;
-			}
-			set
-			{
-				this.oSqlConnection = value;
-			}
+			get;
+			set;
 		}
-
-
 		#endregion
 
 		#region Constructors
 		public Sql(string SqlConnectionString)
 		{
 			this.bDisposed = false;
-			this.sConnectionString = SqlConnectionString;
+
+			this.CommandTimeout = CMD_TIMEOUT;
+			this.ConnectionString = SqlConnectionString;
 		}
 		public Sql(string SqlConnectionString, int CommandTimeout)
 		{
 			this.bDisposed = false;
-			this.iCommandTimeout = CommandTimeout;
-			this.sConnectionString = SqlConnectionString;
+			this.CommandTimeout = CommandTimeout;
+			this.ConnectionString = SqlConnectionString;
 		}
 		public Sql(System.Data.SqlClient.SqlConnection sqlConnection)
 		{
 			this.bDisposed = false;
-			this.sqlConnection = sqlConnection;
-			if (this.sqlConnection.State != ConnectionState.Open) this.sqlConnection.Open();
+
+			this.CommandTimeout = CMD_TIMEOUT;
+			this.SqlConnection = sqlConnection;
+			if (this.SqlConnection.State != ConnectionState.Open) this.SqlConnection.Open();
 		}
 		public Sql(System.Data.SqlClient.SqlConnection sqlConnection, int CommandTimeout)
 		{
 			this.bDisposed = false;
-			this.iCommandTimeout = CommandTimeout;
-			this.sqlConnection = sqlConnection;
-			if (this.sqlConnection.State != ConnectionState.Open) this.sqlConnection.Open();
+
+			this.CommandTimeout = CommandTimeout;
+			this.SqlConnection = sqlConnection;
+			if (this.SqlConnection.State != ConnectionState.Open) this.SqlConnection.Open();
 		}
 		#endregion
 
 		#region Public Methods
 		public IEnumerable<Dictionary<string, object>> RetrieveData(string SqlQuery)
 		{
-			using (System.Data.SqlClient.SqlConnection sqlConnection = new System.Data.SqlClient.SqlConnection(this.sConnectionString))
+			using (System.Data.SqlClient.SqlConnection sqlConnection = new System.Data.SqlClient.SqlConnection(this.ConnectionString))
 			{
 				try
 				{
@@ -124,9 +108,9 @@ namespace iMDirectory.iEngineConnectors.iSqlDatabase
 		{
 			try
 			{
-				if (this.sqlConnection != null)
+				if (this.SqlConnection != null)
 				{
-					using (System.Data.SqlClient.SqlCommand sqlCommand = new System.Data.SqlClient.SqlCommand(SqlQuery, this.sqlConnection))
+					using (System.Data.SqlClient.SqlCommand sqlCommand = new System.Data.SqlClient.SqlCommand(SqlQuery, this.SqlConnection))
 					{
 						sqlCommand.CommandTimeout = this.CommandTimeout;
 						sqlCommand.ExecuteNonQuery();
@@ -172,9 +156,9 @@ namespace iMDirectory.iEngineConnectors.iSqlDatabase
 			{
 				if (bDisposing)
 				{
-					if (this.sqlConnection != null)
+					if (this.SqlConnection != null)
 					{
-						this.sqlConnection.Dispose();
+						this.SqlConnection.Dispose();
 					}
 				}
 

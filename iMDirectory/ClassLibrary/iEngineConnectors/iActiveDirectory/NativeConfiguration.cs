@@ -29,99 +29,65 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 		#region Variables
 		private bool bDisposed;
 
-		private string sBaseSearchDn = null;
-		private string sServerFQDN = null;
-		private Int32 iPortNumber = 389;
-		private Int32 iPageSize = 500;
-		private Int32 iProtocolVersion = 3;
-		private Credentials oSecureCredentials;
-		private System.DirectoryServices.Protocols.SearchScope enSearchScope = SearchScope.Subtree;
-		private Ldap oLdap;
-		private SchemaAttributes oSchemaAttributes;
+		private Ldap LdapObject
+		{
+			get;
+			set;
+		}
+		private SchemaAttributes SchemaAttributesObject
+		{
+			get;
+			set;
+		}
 
 		public string BaseSearchDn
 		{
-			get
-			{
-				return this.sBaseSearchDn;
-			}
-			set
-			{
-				this.sBaseSearchDn = value;
-			}
+			get;
+			set;
 		}
 		public string DomainController
 		{
-			get
-			{
-				return this.sServerFQDN;
-			}
-			set
-			{
-				this.sServerFQDN = value;
-			}
+			get;
+			set;
 		}
 		public Int32 Port
 		{
-			get
-			{
-				return this.iPortNumber;
-			}
-			set
-			{
-				this.iPortNumber = value;
-			}
+			get;
+			set;
 		}
 		public Int32 PageSize
 		{
-			get
-			{
-				return this.iPageSize;
-			}
-			set
-			{
-				this.iPageSize = value;
-			}
+			get;
+			set;
 		}
 		public Int32 ProtocolVersion
 		{
-			get
-			{
-				return this.iProtocolVersion;
-			}
-			set
-			{
-				this.iProtocolVersion = value;
-			}
+			get;
+			set;
 		}
 		public System.DirectoryServices.Protocols.SearchScope SearchScope
 		{
-			get
-			{
-				return this.enSearchScope;
-			}
-			set
-			{
-				this.enSearchScope = value;
-			}
+			get;
+			set;
 		}
 		public Credentials SecureCredentials
 		{
-			set
-			{
-				this.SecureCredentials = value;
-			}
+			get;
+			private set;
 		}
 		#endregion
 
 		#region Constructors
 		public NativeConfiguration(string ServerFQDN, Credentials SecureCredentials, int Port)
 		{
-			this.sServerFQDN = ServerFQDN;
-			this.oSecureCredentials = SecureCredentials;
-			this.iPortNumber = Port;
-			this.oLdap = new Ldap(this.sServerFQDN, SecureCredentials, null, this.iPortNumber);
-			this.oSchemaAttributes = GetSchemaAttributes();
+			this.PageSize = 500;
+			this.ProtocolVersion = 3;
+
+			this.DomainController = ServerFQDN;
+			this.SecureCredentials = SecureCredentials;
+			this.Port = Port;
+			this.LdapObject = new Ldap(this.DomainController, SecureCredentials, null, this.Port);
+			this.SchemaAttributesObject = GetSchemaAttributes();
 		}
 		public NativeConfiguration(string ServerFQDN, Credentials SecureCredentials) : this(ServerFQDN, SecureCredentials, 389) { }
 		#endregion
@@ -244,8 +210,8 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 		{
 			try
 			{
-				this.oLdap.BaseSearchDn = String.Empty;
-				this.oLdap.SearchScope = SearchScope.Base;
+				this.LdapObject.BaseSearchDn = String.Empty;
+				this.LdapObject.SearchScope = SearchScope.Base;
 
 				if (AttributesToLoad == null)
 				{
@@ -265,7 +231,7 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 					}
 				}
 
-				IEnumerator<Dictionary<string, object>> enumResult = oLdap.RetrieveAttributes(null, AttributesToLoad, false).GetEnumerator();
+				IEnumerator<Dictionary<string, object>> enumResult = LdapObject.RetrieveAttributes(null, AttributesToLoad, false).GetEnumerator();
 				if (enumResult.MoveNext())
 				{
 					return enumResult.Current;
@@ -309,10 +275,10 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 
 				Dictionary<string, object> dicRootDSE = RootDSE(new string[] { "configurationNamingContext" });
 
-				this.oLdap.BaseSearchDn = String.Format("CN=Partitions,{0}", ((object[])dicRootDSE["configurationNamingContext"])[0]);
+				this.LdapObject.BaseSearchDn = String.Format("CN=Partitions,{0}", ((object[])dicRootDSE["configurationNamingContext"])[0]);
 
-				this.oLdap.SearchScope = SearchScope.Subtree;
-				return oLdap.RetrieveAttributes("(&(systemFlags:1.2.840.113556.1.4.803:=3)(objectClass=crossRef))", AttributesToLoad, false);
+				this.LdapObject.SearchScope = SearchScope.Subtree;
+				return LdapObject.RetrieveAttributes("(&(systemFlags:1.2.840.113556.1.4.803:=3)(objectClass=crossRef))", AttributesToLoad, false);
 			}
 			catch (Exception eX)
 			{
@@ -375,20 +341,20 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 					AttributeValue = (string)((object[])dicRootDSE["dnsHostName"])[0];
 				}
 
-				this.oLdap.BaseSearchDn = String.Format("CN=Sites,{0}", ((object[])dicRootDSE["configurationNamingContext"])[0]);
+				this.LdapObject.BaseSearchDn = String.Format("CN=Sites,{0}", ((object[])dicRootDSE["configurationNamingContext"])[0]);
 
-				this.oLdap.SearchScope = SearchScope.Subtree;
-				IEnumerator<Dictionary<string, object>> enumServerResult = oLdap.RetrieveAttributes(String.Format("(&({0}={1})(objectClass=server))", AttributeName, AttributeValue), new string[] { "distinguishedName", "name" }, false).GetEnumerator();
+				this.LdapObject.SearchScope = SearchScope.Subtree;
+				IEnumerator<Dictionary<string, object>> enumServerResult = LdapObject.RetrieveAttributes(String.Format("(&({0}={1})(objectClass=server))", AttributeName, AttributeValue), new string[] { "distinguishedName", "name" }, false).GetEnumerator();
 				if (enumServerResult.MoveNext())
 				{
 					string sServerName = (string)((object[])enumServerResult.Current["name"])[0];
 					string sServerDn = (string)((object[])enumServerResult.Current["distinguishedName"])[0];
 
-					this.oLdap.BaseSearchDn = sServerDn.Remove(0, String.Format("CN={0},CN=Servers", sServerName).Length + 1);
+					this.LdapObject.BaseSearchDn = sServerDn.Remove(0, String.Format("CN={0},CN=Servers", sServerName).Length + 1);
 				}
 
-				oLdap.SearchScope = SearchScope.Base;
-				IEnumerator<Dictionary<string, object>> enumSiteResult = oLdap.RetrieveAttributes(null, AttributesToLoad, false).GetEnumerator();
+				LdapObject.SearchScope = SearchScope.Base;
+				IEnumerator<Dictionary<string, object>> enumSiteResult = LdapObject.RetrieveAttributes(null, AttributesToLoad, false).GetEnumerator();
 				if (enumSiteResult.MoveNext())
 				{
 					return enumSiteResult.Current;
@@ -444,20 +410,20 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 
 				Dictionary<string, object> dicRootDSE = RootDSE(new string[] { "configurationNamingContext" });
 
-				this.oLdap.BaseSearchDn = String.Format("CN={0},CN=Sites,{1}", Site, ((object[])dicRootDSE["configurationNamingContext"])[0]);
-				this.oLdap.SearchScope = SearchScope.Subtree;
+				this.LdapObject.BaseSearchDn = String.Format("CN={0},CN=Sites,{1}", Site, ((object[])dicRootDSE["configurationNamingContext"])[0]);
+				this.LdapObject.SearchScope = SearchScope.Subtree;
 			}
 			catch (Exception eX)
 			{
 				throw new Exception(string.Format("{0}::{1}", new StackFrame(0, true).GetMethod().Name, eX.Message));
 			}
 
-			foreach (Dictionary<string, object> dicServer in oLdap.RetrieveAttributes("(objectClass=server)", AttributesToLoad, false))
+			foreach (Dictionary<string, object> dicServer in LdapObject.RetrieveAttributes("(objectClass=server)", AttributesToLoad, false))
 			{
-				this.oLdap.SearchScope = SearchScope.Base;
-				this.oLdap.BaseSearchDn = String.Format("CN=NTDS Settings,{0}", ((object[])dicServer["distinguishedName"])[0]);
+				this.LdapObject.SearchScope = SearchScope.Base;
+				this.LdapObject.BaseSearchDn = String.Format("CN=NTDS Settings,{0}", ((object[])dicServer["distinguishedName"])[0]);
 
-				IEnumerator<Dictionary<string, object>> enumServerParams = oLdap.RetrieveAttributes("(&(options:1.2.840.113556.1.4.803:=1)(objectClass=NTDSDSA))", new string[] { "distinguishedName" }, false).GetEnumerator();
+				IEnumerator<Dictionary<string, object>> enumServerParams = LdapObject.RetrieveAttributes("(&(options:1.2.840.113556.1.4.803:=1)(objectClass=NTDSDSA))", new string[] { "distinguishedName" }, false).GetEnumerator();
 				if (enumServerParams.MoveNext())
 				{
 					yield return dicServer;
@@ -467,7 +433,7 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 
 		public SchemaAttributes GetSchemaAttributes()
 		{
-			return new SchemaAttributes(this.sServerFQDN, this.oSecureCredentials);
+			return new SchemaAttributes(this.DomainController, this.SecureCredentials);
 		}
 		#endregion
 
@@ -484,26 +450,31 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 		{
 			#region Variables
 			private bool bDisposed;
-			private Dictionary<string, AttributeType> dicAttributeTypes = new Dictionary<string, AttributeType>(StringComparer.OrdinalIgnoreCase);
 
-			string sServerFQDN;
+			private string DomainControler
+			{
+				get;
+				set;
+			}
 
-			Credentials oSecureCredentials;
+			private Credentials SecureCredentials
+			{
+				get;
+				set;
+			}
 
 			public Dictionary<string, AttributeType> AttributeTypes
 			{
-				get
-				{
-					return this.dicAttributeTypes;
-				}
+				get;
+				private set;
 			}
 			#endregion
 
 			#region Constructors
 			public SchemaAttributes(string ServerFQDN, Credentials SecureCredentials)
 			{
-				this.sServerFQDN = ServerFQDN;
-				this.oSecureCredentials = SecureCredentials;
+				this.DomainControler = ServerFQDN;
+				this.SecureCredentials = SecureCredentials;
 
 				this.GetSchemaAttributes();
 			}
@@ -541,12 +512,12 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 						};
 
 					Dictionary<string, object> dicRootDSE = NativeConfiguration.GetRootDSE(
-							this.sServerFQDN,
-							this.oSecureCredentials,
+							this.DomainControler,
+							this.SecureCredentials,
 							new string[] { "schemaNamingContext" }
 							);
 
-					using (Ldap oLdap = new Ldap(this.sServerFQDN, this.oSecureCredentials, String.Format("{0}", ((object[])dicRootDSE["schemaNamingContext"])[0]), 389))
+					using (Ldap oLdap = new Ldap(this.DomainControler, this.SecureCredentials, String.Format("{0}", ((object[])dicRootDSE["schemaNamingContext"])[0]), 389))
 					{
 						foreach (Dictionary<string, object> dicRes in oLdap.RetrieveAttributes(sLdapFilter, new string[] { "oMSyntax", "attributeSyntax", "LdapDisplayName" }, false))
 						{
@@ -558,11 +529,11 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 								AttributeType oAttributeType = dicAttributeMappings[sAttributeStx][sAttributeoMStx];
 								string sAttributeName = ((object[])dicRes["LdapDisplayName"])[0].ToString();
 
-								if (this.dicAttributeTypes.ContainsKey(sAttributeName))
+								if (this.AttributeTypes.ContainsKey(sAttributeName))
 								{
 								}
 								else
-									this.dicAttributeTypes.Add(sAttributeName, oAttributeType);
+									this.AttributeTypes.Add(sAttributeName, oAttributeType);
 							}
 						}
 					}
@@ -614,7 +585,7 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 				{
 					if (bDisposing)
 					{
-						this.dicAttributeTypes = null;
+						this.AttributeTypes = null;
 					}
 
 					this.bDisposed = true;
@@ -637,7 +608,7 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 			{
 				if (bDisposing)
 				{
-					if (this.oLdap != null) this.oLdap.Dispose();
+					if (this.LdapObject != null) this.LdapObject.Dispose();
 				}
 
 				this.bDisposed = true;

@@ -11,10 +11,16 @@ namespace iMDirectory.iSecurityComponent
 	public class Credentials : IDisposable
 	{
 		#region Variables
-		private SecureString secPassword;
-		private SecureString secUserName;
-
-		private string sServerName;
+		private SecureString secPassword
+		{
+			get;
+			set;
+		}
+		private SecureString secUserName
+		{
+			get;
+			set;
+		}
 
 		public string Password
 		{
@@ -42,14 +48,8 @@ namespace iMDirectory.iSecurityComponent
 
 		public string ServerName
 		{
-			get
-			{
-				return this.sServerName;
-			}
-			set
-			{
-				this.sServerName = value;
-			}
+			get;
+			set;
 		}
 		#endregion
 
@@ -62,7 +62,7 @@ namespace iMDirectory.iSecurityComponent
 		{
 			this.Password = Password;
 			this.UserName = UserName;
-			this.sServerName = ServerName;
+			this.ServerName = ServerName;
 		}
 		public Credentials(string Password, string UserName) : this(Password, UserName, null) { }
 		#endregion

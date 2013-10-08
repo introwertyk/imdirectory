@@ -31,8 +31,16 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 		#region Variables
 		private bool bDisposed;
 
-		private Ldap oLdap;
-		private NativeConfiguration.SchemaAttributes oSchemaAttributes;
+		private Ldap LdapObject
+		{
+			get;
+			set;
+		}
+		private NativeConfiguration.SchemaAttributes SchemaAttributes
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Constructors
@@ -41,8 +49,8 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 			try
 			{
 				this.bDisposed = false;
-				this.oLdap = new Ldap(ServerFQDN, oSecureCredentials, BaseDn, Port);
-				this.oSchemaAttributes = new NativeConfiguration.SchemaAttributes(ServerFQDN, oSecureCredentials);
+				this.LdapObject = new Ldap(ServerFQDN, oSecureCredentials, BaseDn, Port);
+				this.SchemaAttributes = new NativeConfiguration.SchemaAttributes(ServerFQDN, oSecureCredentials);
 			}
 			catch (Exception eX)
 			{
@@ -74,13 +82,13 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 					sLdapFilter = String.Format(@"(&(uSNChanged>={0})({1}))", HighestCommittedUSN, sLdapFilter);
 				}
 
-				using (LdapConnectionsProvider oLdapConnections = new LdapConnectionsProvider(this.oLdap.DomainControllers[0], this.oLdap.SecureCredentials, this.oLdap.BaseSearchDn, this.oLdap.Port))
+				using (LdapConnectionsProvider oLdapConnections = new LdapConnectionsProvider(this.LdapObject.DomainControllers[0], this.LdapObject.SecureCredentials, this.LdapObject.BaseSearchDn, this.LdapObject.Port))
 				{
 					fifoSearchResultObjects = new ConcurrentQueue<Dictionary<string, string>>();
 
 					if (!Deleted)
 					{
-						Parallel.ForEach(this.oLdap.RetrieveAttributes(sLdapFilter, new string[] { BASE_ATTRIBUTE }, Deleted), (dicRes) =>
+						Parallel.ForEach(this.LdapObject.RetrieveAttributes(sLdapFilter, new string[] { BASE_ATTRIBUTE }, Deleted), (dicRes) =>
 						{
 							try
 							{
@@ -105,7 +113,7 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 					}
 					else
 					{
-						Parallel.ForEach(this.oLdap.RetrieveAttributes(sLdapFilter, new string[] { iEngineConnectors.iActiveDirectory.NativeConfiguration.PRIMARY_LDAP_KEY }, Deleted), (dicRes) =>
+						Parallel.ForEach(this.LdapObject.RetrieveAttributes(sLdapFilter, new string[] { iEngineConnectors.iActiveDirectory.NativeConfiguration.PRIMARY_LDAP_KEY }, Deleted), (dicRes) =>
 						{
 							try
 							{
@@ -147,11 +155,11 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 
 				string sLdapFilter = String.Format(@"(&(uSNChanged>={0})({1}))", HighestCommittedUSN, LdapFilter);
 
-				using (LdapConnectionsProvider oLdapConnections = new LdapConnectionsProvider(this.oLdap.DomainControllers[0], this.oLdap.SecureCredentials, this.oLdap.BaseSearchDn, this.oLdap.Port))
+				using (LdapConnectionsProvider oLdapConnections = new LdapConnectionsProvider(this.LdapObject.DomainControllers[0], this.LdapObject.SecureCredentials, this.LdapObject.BaseSearchDn, this.LdapObject.Port))
 				{
 					fifoSearchResultObjects = new ConcurrentQueue<LinkingUpdate>();
 
-					Parallel.ForEach(this.oLdap.RetrieveAttributes(sLdapFilter, new string[] { BASE_ATTRIBUTE, iEngineConnectors.iActiveDirectory.NativeConfiguration.PRIMARY_LDAP_KEY }, false), (dicRes) =>
+					Parallel.ForEach(this.LdapObject.RetrieveAttributes(sLdapFilter, new string[] { BASE_ATTRIBUTE, iEngineConnectors.iActiveDirectory.NativeConfiguration.PRIMARY_LDAP_KEY }, false), (dicRes) =>
 					{
 						try
 						{
@@ -196,7 +204,7 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 				Type tpAttribute = daProperty[0].GetType();
 
 				NativeConfiguration.SchemaAttributes.AttributeType enAttributeType;
-				if (this.oSchemaAttributes.AttributeTypes.TryGetValue(daProperty.Name, out enAttributeType))
+				if (this.SchemaAttributes.AttributeTypes.TryGetValue(daProperty.Name, out enAttributeType))
 				{
 					switch (enAttributeType)
 					{
@@ -538,9 +546,17 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 		{
 			#region Variables
 			private bool bDisposed;
-			private List<LdapConnection> lLdapConnections;
 
-			private Ldap oLdap;
+			private List<LdapConnection> LdapConnections
+			{
+				get;
+				set;
+			}
+			private Ldap LdapObject
+			{
+				get;
+				set;
+			}
 			#endregion
 
 			#region Constructors
@@ -550,7 +566,7 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 				try
 				{
 					this.bDisposed = false;
-					this.oLdap = new Ldap(ServerFQDN, oSecureCredentials, BaseDn, Port);
+					this.LdapObject = new Ldap(ServerFQDN, oSecureCredentials, BaseDn, Port);
 					this.OpenLdapConnections(NUMBER_OF_LDAP_CONN);
 				}
 				catch (Exception eX)
@@ -565,7 +581,7 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 			#region Public Instance Methods
 			public LdapConnection GetRandomLdapConnectionFromPool()
 			{
-				return this.lLdapConnections[new Random().Next(0, this.lLdapConnections.Count - 1)];
+				return this.LdapConnections[new Random().Next(0, this.LdapConnections.Count - 1)];
 			}
 			#endregion
 
@@ -576,21 +592,21 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 				{
 					this.CloseAllOpenLdapConnections();
 
-					this.lLdapConnections = new List<LdapConnection>();
+					this.LdapConnections = new List<LdapConnection>();
 					for (int i = 0; i < NumbeOfConnections; i++)
 					{
 						try
 						{
-							LdapConnection oLdapConnection = this.oLdap.OpenLdapConnection();
+							LdapConnection oLdapConnection = this.LdapObject.OpenLdapConnection();
 							oLdapConnection.Bind();
-							this.lLdapConnections.Add(oLdapConnection);
+							this.LdapConnections.Add(oLdapConnection);
 						}
 						catch
 						{
 							;
 						}
 					}
-					if (!(this.lLdapConnections.Count > 0))
+					if (!(this.LdapConnections.Count > 0))
 					{
 						throw new Exception("Couldn't establish any LDAP connection with servers!");
 					}
@@ -602,13 +618,13 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 			}
 			private void CloseAllOpenLdapConnections()
 			{
-				if (this.lLdapConnections != null)
+				if (this.LdapConnections != null)
 				{
-					foreach (LdapConnection ldapConn in this.lLdapConnections)
+					foreach (LdapConnection ldapConn in this.LdapConnections)
 					{
 						ldapConn.Dispose();
 					}
-					this.lLdapConnections = null;
+					this.LdapConnections = null;
 				}
 			}
 			#endregion
@@ -642,39 +658,25 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 		public class LinkingUpdate
 		{
 			#region Variables
-			private string sIndexingValue;
-			private Dictionary<string, AttributeValueUpdate> dicLinking;
 
 			public string IndexingValue
 			{
-				get
-				{
-					return this.sIndexingValue;
-				}
-				set
-				{
-					this.sIndexingValue = value;
-				}
+				get;
+				set;
 			}
 
 			public Dictionary<string, AttributeValueUpdate> Linking
 			{
-				get
-				{
-					return this.dicLinking;
-				}
-				set
-				{
-					this.dicLinking = value;
-				}
+				get;
+				set;
 			}
 			#endregion
 
 			#region Constructors
 			public LinkingUpdate(string IndexingValue)
 			{
-				this.sIndexingValue = IndexingValue;
-				this.dicLinking = new Dictionary<string, AttributeValueUpdate>(StringComparer.OrdinalIgnoreCase);
+				this.IndexingValue = IndexingValue;
+				this.Linking = new Dictionary<string, AttributeValueUpdate>(StringComparer.OrdinalIgnoreCase);
 			}
 			#endregion
 
@@ -703,38 +705,30 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 		public class AttributeValueUpdate
 		{
 			#region Variables
-			private Dictionary<string, Action> dicUpdates;
-
 			public Dictionary<string, Action> Updates
 			{
-				get
-				{
-					return this.dicUpdates;
-				}
-				set
-				{
-					this.dicUpdates = value;
-				}
+				get;
+				set;
 			}
 			#endregion
 
 			#region Constructors
 			public AttributeValueUpdate()
 			{
-				this.dicUpdates = new Dictionary<string, Action>(StringComparer.OrdinalIgnoreCase);
+				this.Updates = new Dictionary<string, Action>(StringComparer.OrdinalIgnoreCase);
 			}
 			#endregion
 
 			#region Public Methods
 			public void AddEntry(string Value, Action Action)
 			{
-				if (this.dicUpdates.ContainsKey(Value))
+				if (this.Updates.ContainsKey(Value))
 				{
-					this.dicUpdates[Value] = Action;
+					this.Updates[Value] = Action;
 				}
 				else
 				{
-					this.dicUpdates.Add(Value, Action);
+					this.Updates.Add(Value, Action);
 				}
 			}
 			#endregion

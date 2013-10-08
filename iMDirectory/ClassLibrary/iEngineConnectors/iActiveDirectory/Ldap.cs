@@ -19,90 +19,41 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 
 		#region Variables
 		private bool bDisposed;
-		private string sBaseSearchDn = null;
-		private string[] aDcServers = null;
-		private Int32 iPortNumber;
-		private Int32 iPageSize = 500;
-		private Int32 iProtocolVersion = 3;
-		private Credentials oSecureCredentials;
-		private System.DirectoryServices.Protocols.SearchScope enSearchScope = SearchScope.Subtree;
 
 		public string BaseSearchDn
 		{
-			get
-			{
-				return this.sBaseSearchDn;
-			}
-			set
-			{
-				this.sBaseSearchDn = value;
-			}
+			get;
+			set;
 		}
 		public string[] DomainControllers
 		{
-			get
-			{
-				return this.aDcServers;
-			}
-			set
-			{
-				this.aDcServers = value;
-			}
+			get;
+			set;
 		}
 		public Int32 Port
 		{
-			get
-			{
-				return this.iPortNumber;
-			}
-			set
-			{
-				this.iPortNumber = value;
-			}
+			get;
+			set;
 		}
 		public Int32 PageSize
 		{
-			get
-			{
-				return this.iPageSize;
-			}
-			set
-			{
-				this.iPageSize = value;
-			}
+			get;
+			set;
 		}
 		public Int32 ProtocolVersion
 		{
-			get
-			{
-				return this.iProtocolVersion;
-			}
-			set
-			{
-				this.iProtocolVersion = value;
-			}
+			get;
+			set;
 		}
 		public System.DirectoryServices.Protocols.SearchScope SearchScope
 		{
-			get
-			{
-				return this.enSearchScope;
-			}
-			set
-			{
-				this.enSearchScope = value;
-			}
+			get;
+			set;
 		}
 		public Credentials SecureCredentials
 		{
-			get
-			{
-				return this.oSecureCredentials;
-			}
-			set
-			{
-				this.SecureCredentials = value;
-			}
+			get;
+			set;
 		}
 		#endregion
 
@@ -113,12 +64,14 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 			{
 				this.bDisposed = false;
 
-				this.oSecureCredentials = oSecureCredentials;
+				this.PageSize = 500;
+				this.ProtocolVersion = 3;
+				this.SecureCredentials = oSecureCredentials;
 
-				this.iPortNumber = Port;
+				this.Port = Port;
 				this.BaseSearchDn = BaseDn;
 
-				this.aDcServers = new string[] { ServerFQDN };
+				this.DomainControllers = new string[] { ServerFQDN };
 			}
 			catch (Exception eX)
 			{
@@ -132,7 +85,7 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 		#region Public Instance Methods
 		public IEnumerable<Dictionary<string, object>> RetrieveAttributes(string LdapFilter, string[] AttributesToLoad, bool ShowDeleted)
 		{
-			using (LdapConnection oLdapConnection = this.OpenLdapConnection(this.aDcServers[0], this.oSecureCredentials))
+			using (LdapConnection oLdapConnection = this.OpenLdapConnection(this.DomainControllers[0], this.SecureCredentials))
 			{
 				SearchResponse dirRes = null;
 				SearchRequest srRequest = null;
@@ -140,9 +93,9 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 				PageResultResponseControl rcPageResponse = null;
 
 				string sServerName = oLdapConnection.SessionOptions.HostName;
-				string sBaseDn = (this.sBaseSearchDn == null)
+				string sBaseDn = (this.BaseSearchDn == null)
 					? String.Format("DC={0}", sServerName.Substring(sServerName.IndexOf('.') + 1).Replace(".", ",DC="))
-					: this.sBaseSearchDn;
+					: this.BaseSearchDn;
 
 				srRequest = new SearchRequest(
 							sBaseDn,
@@ -156,11 +109,11 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 					srRequest.Controls.Add(new ShowDeletedControl());
 				}
 				//PAGED
-				if (this.iPageSize > 0)
+				if (this.PageSize > 0)
 				{
 					bool bHasCookies = false;
 					rcPageRequest = new PageResultRequestControl();
-					rcPageRequest.PageSize = this.iPageSize;
+					rcPageRequest.PageSize = this.PageSize;
 
 					srRequest.Controls.Add(rcPageRequest);
 
@@ -269,7 +222,7 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 				oLdapConnection.Bind();
 				oLdapConnection.Timeout = TimeSpan.FromSeconds(CONN_TIME_OUT);
 				oLdapConnection.SessionOptions.TcpKeepAlive = true;
-				oLdapConnection.SessionOptions.ProtocolVersion = this.iProtocolVersion;
+				oLdapConnection.SessionOptions.ProtocolVersion = this.ProtocolVersion;
 
 				oLdapConnection.SessionOptions.ReferralChasing = ReferralChasingOptions.None;
 				oLdapConnection.AutoBind = false;
@@ -285,7 +238,7 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 		{
 			try
 			{
-				return this.OpenLdapConnection(this.aDcServers[0], this.oSecureCredentials);
+				return this.OpenLdapConnection(this.DomainControllers[0], this.SecureCredentials);
 			}
 			catch (Exception eX)
 			{

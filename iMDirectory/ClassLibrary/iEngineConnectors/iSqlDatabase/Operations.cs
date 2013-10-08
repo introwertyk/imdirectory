@@ -20,39 +20,43 @@ namespace iMDirectory.iEngineConnectors.iSqlDatabase
 		#region Variables
 		private bool bDisposed;
 
-		private Sql oSql;
+		private Sql SqlObject
+		{
+			get;
+			set;
+		}
 
 		public int CommandTimeout
 		{
 			get
 			{
-				return this.oSql.CommandTimeout;
+				return this.SqlObject.CommandTimeout;
 			}
 			set
 			{
-				this.oSql.CommandTimeout = value;
+				this.SqlObject.CommandTimeout = value;
 			}
 		}
 		public string ConnectionString
 		{
 			get
 			{
-				return this.oSql.ConnectionString;
+				return this.SqlObject.ConnectionString;
 			}
 			set
 			{
-				this.oSql.ConnectionString = value;
+				this.SqlObject.ConnectionString = value;
 			}
 		}
 		public System.Data.SqlClient.SqlConnection sqlConnection
 		{
 			get
 			{
-				return this.oSql.sqlConnection;
+				return this.SqlObject.SqlConnection;
 			}
 			set
 			{
-				this.oSql.sqlConnection = value;
+				this.SqlObject.SqlConnection = value;
 			}
 		}
 
@@ -63,29 +67,29 @@ namespace iMDirectory.iEngineConnectors.iSqlDatabase
 		public Operations(string SqlConnectionString)
 		{
 			this.bDisposed = false;
-			this.oSql = new Sql(SqlConnectionString);
+			this.SqlObject = new Sql(SqlConnectionString);
 		}
 		public Operations(string SqlConnectionString, int CommandTimeout)
 		{
 			this.bDisposed = false;
-			this.oSql = new Sql(SqlConnectionString, CommandTimeout);
+			this.SqlObject = new Sql(SqlConnectionString, CommandTimeout);
 		}
 		public Operations(System.Data.SqlClient.SqlConnection sqlConnection)
 		{
 			this.bDisposed = false;
-			this.oSql = new Sql(sqlConnection);
+			this.SqlObject = new Sql(sqlConnection);
 		}
 		public Operations(System.Data.SqlClient.SqlConnection sqlConnection, int CommandTimeout)
 		{
 			this.bDisposed = false;
-			this.oSql = new Sql(sqlConnection, CommandTimeout);
+			this.SqlObject = new Sql(sqlConnection, CommandTimeout);
 		}
 		#endregion
 
 		#region Public Methods
 		public IEnumerable<Dictionary<string, object>> GetOrderedSyncServers(int ObjectClassID)
 		{
-			return this.oSql.RetrieveData(String.Format("EXEC {0} @iObjectClassID={1}", "spGetOrderedSyncServers", ObjectClassID));
+			return this.SqlObject.RetrieveData(String.Format("EXEC {0} @iObjectClassID={1}", "spGetOrderedSyncServers", ObjectClassID));
 		}
 
 		public long GetLastStoredUSN(int ObjectClassID, string ServerGUID, bool IsLinkingContext)
@@ -93,7 +97,7 @@ namespace iMDirectory.iEngineConnectors.iSqlDatabase
 			try
 			{
 				long iHigestCommittedUsn = 0;
-				IEnumerator<Dictionary<string, object>> enumRes = this.oSql.RetrieveData(String.Format("EXEC {0} @iObjectClassID={1}, @ServerGUID='{2}', @IsLinkingContext={3}", "spGetLatestUSN", ObjectClassID, ServerGUID, IsLinkingContext ? 1 : 0)).GetEnumerator();
+				IEnumerator<Dictionary<string, object>> enumRes = this.SqlObject.RetrieveData(String.Format("EXEC {0} @iObjectClassID={1}, @ServerGUID='{2}', @IsLinkingContext={3}", "spGetLatestUSN", ObjectClassID, ServerGUID, IsLinkingContext ? 1 : 0)).GetEnumerator();
 				if (enumRes.MoveNext())
 				{
 					object oValue;
@@ -124,7 +128,7 @@ namespace iMDirectory.iEngineConnectors.iSqlDatabase
 						IsLinkingContext ? 1 : 0
 						);
 
-				this.oSql.ExecuteNonSqlQuery(sSqlQuery);
+				this.SqlObject.ExecuteNonSqlQuery(sSqlQuery);
 			}
 			catch (Exception eX)
 			{
@@ -138,7 +142,7 @@ namespace iMDirectory.iEngineConnectors.iSqlDatabase
 			{
 				List<string> lAttributeList = new List<string>();
 
-				foreach (Dictionary<string, object> dicRes in this.oSql.RetrieveData(String.Format("EXEC {0} @iObjectClassID={1}", "spGetClassAttributes", ObjectClassID)))
+				foreach (Dictionary<string, object> dicRes in this.SqlObject.RetrieveData(String.Format("EXEC {0} @iObjectClassID={1}", "spGetClassAttributes", ObjectClassID)))
 				{
 					lAttributeList.Add(dicRes["Attribute"].ToString());
 				}
@@ -231,7 +235,7 @@ VALUES ({{3}},{3})",
 					{
 						if (sbSqlQuery.Length > 0)
 						{
-							this.oSql.ExecuteNonSqlQuery(sbSqlQuery.ToString());
+							this.SqlObject.ExecuteNonSqlQuery(sbSqlQuery.ToString());
 							sbSqlQuery = new StringBuilder();
 						}
 					}
@@ -240,7 +244,7 @@ VALUES ({{3}},{3})",
 				}
 				if (sbSqlQuery.Length > 0 & (iRow % ROW_LIMIT) > 0)
 				{
-					this.oSql.ExecuteNonSqlQuery(sbSqlQuery.ToString());
+					this.SqlObject.ExecuteNonSqlQuery(sbSqlQuery.ToString());
 				}
 			}
 			catch (Exception ex)
@@ -352,7 +356,7 @@ WHERE iLinkingAttributeID={3} AND (FWD._iObjectClassID={4}) AND (FWD.{5}='{{1}}'
 							{
 								if (sbSqlRequests.Length > 0)
 								{
-									oSql.ExecuteNonSqlQuery(sbSqlRequests.ToString());
+									SqlObject.ExecuteNonSqlQuery(sbSqlRequests.ToString());
 									sbSqlRequests = new StringBuilder();
 								}
 							}
@@ -362,7 +366,7 @@ WHERE iLinkingAttributeID={3} AND (FWD._iObjectClassID={4}) AND (FWD.{5}='{{1}}'
 
 				if (sbSqlRequests.Length > 0)
 				{
-					oSql.ExecuteNonSqlQuery(sbSqlRequests.ToString());
+					SqlObject.ExecuteNonSqlQuery(sbSqlRequests.ToString());
 				}
 			}
 			catch (Exception eX)
@@ -423,7 +427,7 @@ DELETE FROM {0} WHERE [{1}]='{2}';COMMIT TRANSACTION;",
 					{
 						if (sbSqlRequests.Length > 0)
 						{
-							oSql.ExecuteNonSqlQuery(sbSqlRequests.ToString());
+							SqlObject.ExecuteNonSqlQuery(sbSqlRequests.ToString());
 							sbSqlRequests = new StringBuilder();
 						}
 					}
@@ -431,7 +435,7 @@ DELETE FROM {0} WHERE [{1}]='{2}';COMMIT TRANSACTION;",
 				}
 				if (sbSqlRequests.Length > 0)
 				{
-					oSql.ExecuteNonSqlQuery(sbSqlRequests.ToString());
+					SqlObject.ExecuteNonSqlQuery(sbSqlRequests.ToString());
 				}
 			}
 			catch (Exception ex)

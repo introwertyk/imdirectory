@@ -21,12 +21,13 @@ namespace iMDirectory
 		private const string DELIMITER = "|";
 		#endregion
 
-		#region Public Variables
-		#endregion
-
-		#region Private Variables
+		#region  Variables
 		protected EventLog oEventLog;
-		private iEngineConfiguration.Configuration oConfiguration;
+		private iEngineConfiguration.Configuration Configuration
+		{
+			get;
+			set;
+		}
 		bool bDisposed;
 
 		#endregion
@@ -43,7 +44,7 @@ namespace iMDirectory
 		#region Public Methods
 		public void Start()
 		{
-			foreach (iEngineConfiguration.Connector oConnector in this.oConfiguration.Connectors.Values)
+			foreach (iEngineConfiguration.Connector oConnector in this.Configuration.Connectors.Values)
 			{
 				try
 				{
@@ -61,7 +62,7 @@ namespace iMDirectory
 				}
 			}
 
-			foreach (iEngineConfiguration.Connector oConnector in this.oConfiguration.Connectors.Values)
+			foreach (iEngineConfiguration.Connector oConnector in this.Configuration.Connectors.Values)
 			{
 				try
 				{
@@ -297,7 +298,7 @@ namespace iMDirectory
 		{
 			try
 			{
-				this.oConfiguration = new iEngineConfiguration.Configuration();
+				this.Configuration = new iEngineConfiguration.Configuration();
 
 				using (iEngineConnectors.iSqlDatabase.Sql oSql = new iEngineConnectors.iSqlDatabase.Sql(ConfigurationManager.ConnectionStrings["iMDirectory"].ConnectionString))
 				{
@@ -308,10 +309,10 @@ namespace iMDirectory
 
 						iEngineConfiguration.Connector oConnector;
 
-						if (!this.oConfiguration.Connectors.TryGetValue(iConnectorID, out oConnector))
+						if (!this.Configuration.Connectors.TryGetValue(iConnectorID, out oConnector))
 						{
 							oConnector = new iEngineConfiguration.Connector();
-							this.oConfiguration.Connectors.Add(iConnectorID, oConnector);
+							this.Configuration.Connectors.Add(iConnectorID, oConnector);
 						}
 
 						oConnector.ConnectorID = iConnectorID;
@@ -341,10 +342,10 @@ namespace iMDirectory
 
 							iEngineConfiguration.Class oObjectClass;
 
-							if (!this.oConfiguration.Classes.TryGetValue(iObjectClassID, out oObjectClass))
+							if (!this.Configuration.Classes.TryGetValue(iObjectClassID, out oObjectClass))
 							{
 								oObjectClass = new iEngineConfiguration.Class();
-								this.oConfiguration.Classes.Add(iObjectClassID, oObjectClass);
+								this.Configuration.Classes.Add(iObjectClassID, oObjectClass);
 								oConnector.ObjectClasses.Add(oObjectClass);
 							}
 
@@ -366,10 +367,10 @@ namespace iMDirectory
 
 							iEngineConfiguration.Linking oLinking;
 
-							if (!this.oConfiguration.Linking.TryGetValue(iLinkingAttributeID, out oLinking))
+							if (!this.Configuration.Linking.TryGetValue(iLinkingAttributeID, out oLinking))
 							{
 								oLinking = new iEngineConfiguration.Linking();
-								this.oConfiguration.Linking.Add(iLinkingAttributeID, oLinking);
+								this.Configuration.Linking.Add(iLinkingAttributeID, oLinking);
 							}
 
 							oLinking.LinkingAttributeID = iLinkingAttributeID;
@@ -382,14 +383,14 @@ namespace iMDirectory
 							int iBckObjectClassID = Convert.ToInt32(oLinkRes["iBckObjectClassID"]);
 
 							iEngineConfiguration.Class oObjectClass;
-							if ( this.oConfiguration.Classes.TryGetValue(iFwdObjectClassID, out oObjectClass) )
+							if ( this.Configuration.Classes.TryGetValue(iFwdObjectClassID, out oObjectClass) )
 							{
 								if (!oLinking.ForwardLinkClasses.Contains(oObjectClass))
 								{
 									oLinking.ForwardLinkClasses.Add(oObjectClass);
 								}
 							}
-							if (this.oConfiguration.Classes.TryGetValue(iBckObjectClassID, out oObjectClass))
+							if (this.Configuration.Classes.TryGetValue(iBckObjectClassID, out oObjectClass))
 							{
 								if (!oLinking.BackLinkClasses.Contains(oObjectClass))
 								{
@@ -399,14 +400,14 @@ namespace iMDirectory
 						}
 
 						//Collect linking configuration
-						foreach (iEngineConfiguration.Class oObjectClass in this.oConfiguration.Classes.Values)
+						foreach (iEngineConfiguration.Class oObjectClass in this.Configuration.Classes.Values)
 						{
 							foreach (Dictionary<string, object> oLinkRes in oSql.RetrieveData(String.Format("EXEC spGetLinkingAttributesForLinkedClass @iFwdObjectClassID={0}", oObjectClass.ObjectClassID)))
 							{
 								int iLinkingAttributeID = Convert.ToInt32(oLinkRes["iLinkingAttributeID"]);
 
 								iEngineConfiguration.Linking oLinking;
-								if (this.oConfiguration.Linking.TryGetValue(iLinkingAttributeID, out oLinking))
+								if (this.Configuration.Linking.TryGetValue(iLinkingAttributeID, out oLinking))
 								{
 									if ( !oObjectClass.BackwardLinking.Contains(oLinking) )
 									{
@@ -420,7 +421,7 @@ namespace iMDirectory
 								int iLinkingAttributeID = Convert.ToInt32(oLinkRes["iLinkingAttributeID"]);
 
 								iEngineConfiguration.Linking oLinking;
-								if (this.oConfiguration.Linking.TryGetValue(iLinkingAttributeID, out oLinking))
+								if (this.Configuration.Linking.TryGetValue(iLinkingAttributeID, out oLinking))
 								{
 									if (!oObjectClass.ForwardLinking.Contains(oLinking))
 									{
@@ -439,9 +440,9 @@ namespace iMDirectory
 
 						iEngineConfiguration.Connector oParentConnector;
 						iEngineConfiguration.Connector oChildConnector;
-						if( this.oConfiguration.Connectors.TryGetValue(iParentConnectorID, out oParentConnector) )
+						if( this.Configuration.Connectors.TryGetValue(iParentConnectorID, out oParentConnector) )
 						{
-							if (this.oConfiguration.Connectors.TryGetValue(iChildConnectorID, out oChildConnector))
+							if (this.Configuration.Connectors.TryGetValue(iChildConnectorID, out oChildConnector))
 							{
 								oParentConnector.ChildConnectors.Add(oChildConnector);
 								oChildConnector.ParrentConnector = oParentConnector;
