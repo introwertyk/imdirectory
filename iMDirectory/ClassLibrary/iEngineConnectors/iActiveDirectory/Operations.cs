@@ -62,6 +62,10 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 		#endregion
 
 		#region Public Instance Methods
+		/// <summary>
+		/// Retrieves MS AD(DS) objects changes delta and casts attributes into dictionaries of key/value pairs. Where key represents AD attribute name and value corresponds to attribute value.
+		/// Uses multi-threading to cast MS AD(DS) attributes. Attribute values are translated into string.
+		/// </summary>
 		public ConcurrentQueue<Dictionary<string, string>> GetDirectoryDelta(long HighestCommittedUSN, string LdapFilter, List<string> AttributesToLoad, string Delimiter, bool Deleted)
 		{
 			try
@@ -145,6 +149,9 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 			}
 		}
 
+		/// <summary>
+		/// Retrieves MS AD(DS) objects linking changes delta.
+		/// </summary>
 		public ConcurrentQueue<LinkingUpdate> GetDirectoryMetaDataDelta(long HighestCommittedUSN, string LdapFilter, List<string> AttributesToLoad)
 		{
 			try
@@ -193,6 +200,10 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 			}
 		}
 
+		/// <summary>
+		/// Translates attribute value into string.
+		/// All multi-valued attributes are translated into delimited string.
+		/// </summary>
 		public string TranslateAttribute(DirectoryAttribute daProperty, string sDelimiter)
 		{
 			try
@@ -244,7 +255,6 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 								object[] aValues = daProperty.GetValues(tpAttribute);
 								return String.Join(sDelimiter, (string[])aValues);
 							}
-							break;
 					}
 				}
 				else
@@ -285,6 +295,10 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 		#endregion
 
 		#region Private Instance Methods
+		/// <summary>
+		/// Retrieves MS AD(DS) object changes and casts attributes into dictionary of key/value pairs. Where key represents AD attribute name and value corresponds to attribute value.
+		/// Uses multi-threading to cast MS AD(DS) attributes. Attribute values are translated into string.
+		/// </summary>
 		private Dictionary<string, string> GetObjectDeltasOfAttributes(LdapConnection oLdapConnection, string BaseDN, string[] aAttributesToLoad, long iHighestCommittedUSN, string sDelimiter)
 		{
 			const int RETRY_NO = 7;
@@ -376,6 +390,10 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 			return dicProperties;
 		}
 
+		/// <summary>
+		/// Retrieves MS AD(DS) object linking changes.
+		/// Linking attribute is casted here into LinkingUpdate object.
+		/// </summary>
 		private LinkingUpdate GetObjectDeltasOfValues(LdapConnection oLdapConnection, string BaseDN, HashSet<string> hsAttributesToLoad, long iHighestCommittedUSN)
 		{
 			const ushort RETRY_NO = 7;
@@ -482,6 +500,10 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 		#endregion
 
 		#region Private Instance Methods
+		/// <summary>
+		/// Processes XML payload and searches for specific node names.
+		/// Returns dictionary of nodes name and value.
+		/// </summary>
 		private Dictionary<string, string> GetXMLNodeInnertext(string sXmlNodes, string[] aNodeNames, bool bOrderedUnique)
 		{
 			try
@@ -579,6 +601,9 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 			#endregion
 
 			#region Public Instance Methods
+			/// <summary>
+			/// Retrieves random LdapConnection object from collection of LdapConnection's.
+			/// </summary>
 			public LdapConnection GetRandomLdapConnectionFromPool()
 			{
 				return this.LdapConnections[new Random().Next(0, this.LdapConnections.Count - 1)];
@@ -586,6 +611,9 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 			#endregion
 
 			#region Private Instance Methods
+			/// <summary>
+			/// Opens n number of new connections with directory server.
+			/// </summary>
 			private void OpenLdapConnections(int NumbeOfConnections)
 			{
 				try
@@ -616,6 +644,10 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 					throw new Exception(string.Format("{0}::{1}", new StackFrame(0, true).GetMethod().Name, eX.Message));
 				}
 			}
+
+			/// <summary>
+			/// Opens all open connections from the LdapConnection collection.
+			/// </summary>
 			private void CloseAllOpenLdapConnections()
 			{
 				if (this.LdapConnections != null)
@@ -681,6 +713,9 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 			#endregion
 
 			#region Public Methods
+			/// <summary>
+			/// Adds new linking to Linking dictionary. Uses retrieved forward-link attribute changes as to build new linking state.
+			/// </summary>
 			public void AddEntry(string AttributeName, AttributeValueUpdate ValueUpdate)
 			{
 				if (this.Linking.ContainsKey(AttributeName))
@@ -720,6 +755,9 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 			#endregion
 
 			#region Public Methods
+			/// <summary>
+			/// Adds attribute updates to dictionary. Uses retrieved attribute changes to build object representing attribute changes.
+			/// </summary>
 			public void AddEntry(string Value, Action Action)
 			{
 				if (this.Updates.ContainsKey(Value))
@@ -731,9 +769,6 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 					this.Updates.Add(Value, Action);
 				}
 			}
-			#endregion
-
-			#region Private Methods
 			#endregion
 
 			#region enum

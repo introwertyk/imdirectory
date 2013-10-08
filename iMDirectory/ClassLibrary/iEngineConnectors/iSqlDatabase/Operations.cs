@@ -87,11 +87,21 @@ namespace iMDirectory.iEngineConnectors.iSqlDatabase
 		#endregion
 
 		#region Public Methods
+		/// <summary>
+		/// From synchronization meta-data retrieves directory servers GUID(s) used to retrieve changes.
+		/// Requires Object Class ID from given connector context as synchronization is performed per object class.
+		/// </summary>
 		public IEnumerable<Dictionary<string, object>> GetOrderedSyncServers(int ObjectClassID)
 		{
 			return this.SqlObject.RetrieveData(String.Format("EXEC {0} @iObjectClassID={1}", "spGetOrderedSyncServers", ObjectClassID));
 		}
 
+		/// <summary>
+		/// From synchronization meta-data retrieves last stored HighestCommittedUSN.
+		/// Requires Object Class ID from given connector context as synchronization is performed per object class.
+		/// Requires the last used server GUID.
+		/// Data can be retrieved for MS AD(DS) object changes or for linking attribute changes.
+		/// </summary>
 		public long GetLastStoredUSN(int ObjectClassID, string ServerGUID, bool IsLinkingContext)
 		{
 			try
@@ -114,6 +124,10 @@ namespace iMDirectory.iEngineConnectors.iSqlDatabase
 			}
 		}
 
+		/// <summary>
+		/// Stores last HighestCommittedUSN in synchronization meta-data DB.
+		/// HighestCommittedUSN should be stored only when synchronization was completed successfully.
+		/// </summary>
 		public void SetHighestCommittedUSN(int ObjectClassID, string DomainFqdn, string ServerFqdn, string ServerGUID, long UpdateSequenceNumber, bool IsLinkingContext)
 		{
 			try
@@ -136,6 +150,11 @@ namespace iMDirectory.iEngineConnectors.iSqlDatabase
 			}
 		}
 
+		/// <summary>
+		/// Retrieves attributes names for which synchronization is being performed.
+		/// Attribute names correspond to table columns names and information is retrieved from DB schema.
+		/// Tables are organized per object class and ObjectClassID is required to recognize table name.
+		/// </summary>
 		public List<string> GetAttributesToLoad(int ObjectClassID)
 		{
 			try
@@ -155,6 +174,9 @@ namespace iMDirectory.iEngineConnectors.iSqlDatabase
 			}
 		}
 
+		/// <summary>
+		/// Writes MS AD(DS) object changes queue into MS SQL DB.
+		/// </summary>
 		public void PushObjectDeltas(string TableName, int ObjectClassID, ConcurrentQueue<Dictionary<string, string>> UpdatesCollection, string IndexingAttributeName)
 		{
 			try
@@ -253,6 +275,9 @@ VALUES ({{3}},{3})",
 			}
 		}
 
+		/// <summary>
+		/// Writes MS AD(DS) linking object changes queue into MS SQL DB.
+		/// </summary>
 		public void PushLinksDeltas(iEngineConfiguration.Class oClass, ConcurrentQueue<iEngineConnectors.iActiveDirectory.Operations.LinkingUpdate> Deltas)
 		{
 			try
@@ -375,6 +400,9 @@ WHERE iLinkingAttributeID={3} AND (FWD._iObjectClassID={4}) AND (FWD.{5}='{{1}}'
 			}
 		}
 
+		/// <summary>
+		/// Writes MS AD(DS) object changes (deletions) queue into MS SQL DB.
+		/// </summary>
 		public void PushDeletions(iEngineConfiguration.Class oClass, ConcurrentQueue<Dictionary<string, string>> UpdatesCollection, string IndexingAttributeName)
 		{
 			try
@@ -443,9 +471,6 @@ DELETE FROM {0} WHERE [{1}]='{2}';COMMIT TRANSACTION;",
 				throw new Exception(string.Format("{0}::{1}", new StackFrame(0, true).GetMethod().Name, ex.Message));
 			}
 		}
-		#endregion
-
-		#region Private Methods
 		#endregion
 
 		#region IDisposable Members

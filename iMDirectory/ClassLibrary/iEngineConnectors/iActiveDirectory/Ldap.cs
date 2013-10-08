@@ -83,6 +83,9 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 		#endregion
 
 		#region Public Instance Methods
+		/// <summary>
+		/// Asynchronously retrieves MS AD(DS) objects and casts attributes into dictionaries of key/value pairs. Where key represents AD attribute name and value (object) corresponds to attribute value.
+		/// </summary>
 		public IEnumerable<Dictionary<string, object>> RetrieveAttributes(string LdapFilter, string[] AttributesToLoad, bool ShowDeleted)
 		{
 			using (LdapConnection oLdapConnection = this.OpenLdapConnection(this.DomainControllers[0], this.SecureCredentials))
@@ -212,6 +215,10 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 				if (rcPageResponse != null) { rcPageResponse = null; }
 			}
 		}
+
+		/// <summary>
+		/// Opens new LDAP connection with end-server.
+		/// </summary>
 		public LdapConnection OpenLdapConnection(string sServerName, Credentials oSecureCredentials)
 		{
 			try
@@ -234,6 +241,10 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 				throw new Exception(string.Format("{0}::{1}", new StackFrame(0, true).GetMethod().Name, eX.Message));
 			}
 		}
+
+		/// <summary>
+		/// Opens new LDAP connection with end-server.
+		/// </summary>
 		public LdapConnection OpenLdapConnection()
 		{
 			try

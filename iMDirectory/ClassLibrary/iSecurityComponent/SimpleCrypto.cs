@@ -23,6 +23,9 @@ namespace iMDirectory.iSecurityComponent
 		#endregion
 
 		#region Public Methods
+		/// <summary>
+		/// Encrypts text into base64 format string. Binary value of each text character is simply chagned with binary negation.
+		/// </summary>
 		public string Encrypt(string PlainText)
 		{
 			try
@@ -35,6 +38,9 @@ namespace iMDirectory.iSecurityComponent
 			}
 		}
 
+		/// <summary>
+		/// Decrypts text from base64 format string. Binary value of each text character is simply chagned with binary negation.
+		/// </summary>
 		public string Decrypt(string DecryptedText)
 		{
 			try
@@ -49,6 +55,9 @@ namespace iMDirectory.iSecurityComponent
 		#endregion
 
 		#region Public Methods
+		/// <summary>
+		/// Encrypts text into base64 format string. Binary value of each text character is simply chagned with binary negation.
+		/// </summary>
 		public static string EncryptString(string PlainText)
 		{
 			try
@@ -61,6 +70,9 @@ namespace iMDirectory.iSecurityComponent
 			}
 		}
 
+		/// <summary>
+		/// Decrypts text from base64 format string. Binary value of each text character is simply chagned with binary negation.
+		/// </summary>
 		public static string DecryptString(string DecryptedText)
 		{
 			try

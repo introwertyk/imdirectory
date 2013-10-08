@@ -481,6 +481,9 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 			#endregion
 
 			#region Private Instance Methods
+			/// <summary>
+			/// Retrieves MS AD(DS) all attributes definition required for object types casting to corresponding MS SQL DB data type.
+			/// </summary>
 			private void GetSchemaAttributes()
 			{
 				try

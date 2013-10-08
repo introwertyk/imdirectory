@@ -68,6 +68,9 @@ namespace iMDirectory.iSecurityComponent
 		#endregion
 
 		#region Methods
+		/// <summary>
+		/// Sets SecureString using given unsecured String.
+		/// </summary>
 		private SecureString setSecureString(string String)
 		{
 			SecureString secString = null;
@@ -96,6 +99,10 @@ namespace iMDirectory.iSecurityComponent
 				}
 			}
 		}
+
+		/// <summary>
+		/// Retrieves unsecured string for given SecureString value.
+		/// </summary>
 		private string getSecureString(SecureString String)
 		{
 			if (String == null)
