@@ -17,6 +17,9 @@ using System.Collections;
 
 namespace iMDirectory.iEngineConnectors.iActiveDirectory
 {
+	/// <summary>
+	/// Delivers information about MS AD(DS) configuration.  
+	/// </summary>
 	public class NativeConfiguration : IDisposable
 	{
 		#region Constants
@@ -473,6 +476,10 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 		#endregion
 
 		#region Classes
+		/// <summary>
+		/// Class delivers MS AD(DS) attributes definition from AD schema.
+		/// Data types defined in AD can be casted to right data types in MS SQL.
+		/// </summary>
 		public class SchemaAttributes : IDisposable
 		{
 			#region Variables

@@ -4,93 +4,47 @@ using System.Diagnostics;
 
 namespace iMDirectory.iEngineConfiguration
 {
+	/// <summary>
+	/// Linking configuration class. Defines references between different object classes for linking attribute reporting.
+	/// Initiated based on linking DB configuration.
+	/// </summary>
 	public class Linking
 	{
 		#region Variables
-		private int iiLinkingAttributeID;
-		private string sForwardLink;
-		private string sBackLink;
-		private string sLinkedWith;
-		private string sTableContext;
-		private List<Class> lForwardLinkClasses;
-		private List<Class> lBackLinkClasses;
-
-		public int iLinkingAttributeID
+		public int LinkingAttributeID
 		{
-			get
-			{
-				return this.iiLinkingAttributeID;
-			}
-			set
-			{
-				this.iiLinkingAttributeID = value;
-			}
+			get;
+			set;
 		}
 		public string ForwardLink
 		{
-			get
-			{
-				return this.sForwardLink;
-			}
-			set
-			{
-				this.sForwardLink = value;
-			}
+			get;
+			set;
 		}
 		public string BackLink
 		{
-			get
-			{
-				return this.sBackLink;
-			}
-			set
-			{
-				this.sBackLink = value;
-			}
+			get;
+			set;
 		}
 		public string LinkedWith
 		{
-			get
-			{
-				return this.sLinkedWith;
-			}
-			set
-			{
-				this.sLinkedWith = value;
-			}
+			get;
+			set;
 		}
 		public string TableContext
 		{
-			get
-			{
-				return this.sTableContext;
-			}
-			set
-			{
-				this.sTableContext = value;
-			}
+			get;
+			set;
 		}
 		public List<Class> ForwardLinkClasses
 		{
-			get
-			{
-				return this.lForwardLinkClasses;
-			}
-			set
-			{
-				this.lForwardLinkClasses = value;
-			}
+			get;
+			set;
 		}
 		public List<Class> BackLinkClasses
 		{
-			get
-			{
-				return this.lBackLinkClasses;
-			}
-			set
-			{
-				this.lBackLinkClasses = value;
-			}
+			get;
+			set;
 		}
 		#endregion
 
@@ -103,9 +57,13 @@ namespace iMDirectory.iEngineConfiguration
 		#endregion
 
 		#region Methods
+		/// <summary>
+		/// Adds Object Class reference from forward-linked object class to back-linked object class.
+		/// Builds object class linking relationship.
+		/// </summary>
 		public void Add(Class ForwardLinkObjectClass)
 		{
-			this.lForwardLinkClasses.Add(ForwardLinkObjectClass);
+			this.ForwardLinkClasses.Add(ForwardLinkObjectClass);
 		}
 		#endregion
 	}

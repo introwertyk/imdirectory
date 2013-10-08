@@ -7,6 +7,10 @@ using System.Text;
 
 namespace iMDirectory.iEngineConnectors.iSqlDatabase
 {
+	/// <summary>
+	/// Retrieves data from underlying MS SQL DB
+	/// Class defines interface between component and data stored under specific data structure.
+	/// </summary>
 	public class Operations : IDisposable
 	{
 		#region Constants
@@ -271,7 +275,7 @@ VALUES ({{3}},{3})",
 							sbSubQuery.AppendFormat("SELECT _ObjectID, _iObjectClassID FROM dbo.[{0}] WHERE [{1}]='{{0}}' AND [_iObjectClassID]={2}",
 								oBckClass.TableContext,
 								LinkingDefinition.LinkedWith,
-								oBckClass.iObjectClassID
+								oBckClass.ObjectClassID
 								);
 						}
 						else
@@ -279,7 +283,7 @@ VALUES ({{3}},{3})",
 							sbSubQuery.AppendFormat("UNION ALL SELECT _ObjectID, _iObjectClassID FROM dbo.[{0}] WHERE [{1}]='{{0}}' AND [_iObjectClassID]={2}",
 								oBckClass.TableContext,
 								LinkingDefinition.LinkedWith,
-								oBckClass.iObjectClassID
+								oBckClass.ObjectClassID
 								);
 						}
 					}
@@ -292,10 +296,10 @@ SELECT '{1}',FWD._iObjectClassID,FWD._ObjectID,BCK._iObjectClassID,BCK._ObjectID
 FROM [{2}] FWD, ({3}) BCK
 WHERE (FWD._iObjectClassID={4}) AND (FWD.{5}='{{1}}');",
 						LinkingDefinition.TableContext,
-						LinkingDefinition.iLinkingAttributeID,
+						LinkingDefinition.LinkingAttributeID,
 						oClass.TableContext,
 						sbSubQuery,
-						oClass.iObjectClassID,
+						oClass.ObjectClassID,
 						iEngineConnectors.iActiveDirectory.NativeConfiguration.PRIMARY_LDAP_KEY
 						);
 
@@ -313,8 +317,8 @@ WHERE iLinkingAttributeID={3} AND (FWD._iObjectClassID={4}) AND (FWD.{5}='{{1}}'
 					LinkingDefinition.TableContext,
 					oClass.TableContext,
 					sbSubQuery,
-					LinkingDefinition.iLinkingAttributeID,
-					oClass.iObjectClassID,
+					LinkingDefinition.LinkingAttributeID,
+					oClass.ObjectClassID,
 					iEngineConnectors.iActiveDirectory.NativeConfiguration.PRIMARY_LDAP_KEY
 					);
 

@@ -5,6 +5,9 @@ using System.Security;
 
 namespace iMDirectory.iSecurityComponent
 {
+	/// <summary>
+	/// Credentials class created to securely store and pass credentials between components and modules.
+	/// </summary>
 	public class Credentials : IDisposable
 	{
 		#region Variables

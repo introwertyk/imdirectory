@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsService", "WindowsSe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary", "ClassLibrary\ClassLibrary.csproj", "{86FEEFDC-84BD-4DEC-BB58-F40CA583080E}"
 EndProject
+Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "WindowsAzure", "WindowsAzure1\WindowsAzure.ccproj", "{14E6527A-2AA7-4BA7-B708-33DE345DEA3E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkerRole", "WorkerRole\WorkerRole.csproj", "{65AD10B3-470A-4431-BF7F-F6EE96EB4BDB}"
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -43,6 +47,26 @@ Global
 		{86FEEFDC-84BD-4DEC-BB58-F40CA583080E}.Release|ARM.ActiveCfg = Release|Any CPU
 		{86FEEFDC-84BD-4DEC-BB58-F40CA583080E}.Release|x64.ActiveCfg = Release|Any CPU
 		{86FEEFDC-84BD-4DEC-BB58-F40CA583080E}.Release|x86.ActiveCfg = Release|Any CPU
+		{14E6527A-2AA7-4BA7-B708-33DE345DEA3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14E6527A-2AA7-4BA7-B708-33DE345DEA3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14E6527A-2AA7-4BA7-B708-33DE345DEA3E}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{14E6527A-2AA7-4BA7-B708-33DE345DEA3E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{14E6527A-2AA7-4BA7-B708-33DE345DEA3E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{14E6527A-2AA7-4BA7-B708-33DE345DEA3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14E6527A-2AA7-4BA7-B708-33DE345DEA3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14E6527A-2AA7-4BA7-B708-33DE345DEA3E}.Release|ARM.ActiveCfg = Release|Any CPU
+		{14E6527A-2AA7-4BA7-B708-33DE345DEA3E}.Release|x64.ActiveCfg = Release|Any CPU
+		{14E6527A-2AA7-4BA7-B708-33DE345DEA3E}.Release|x86.ActiveCfg = Release|Any CPU
+		{65AD10B3-470A-4431-BF7F-F6EE96EB4BDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65AD10B3-470A-4431-BF7F-F6EE96EB4BDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65AD10B3-470A-4431-BF7F-F6EE96EB4BDB}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{65AD10B3-470A-4431-BF7F-F6EE96EB4BDB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{65AD10B3-470A-4431-BF7F-F6EE96EB4BDB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{65AD10B3-470A-4431-BF7F-F6EE96EB4BDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65AD10B3-470A-4431-BF7F-F6EE96EB4BDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65AD10B3-470A-4431-BF7F-F6EE96EB4BDB}.Release|ARM.ActiveCfg = Release|Any CPU
+		{65AD10B3-470A-4431-BF7F-F6EE96EB4BDB}.Release|x64.ActiveCfg = Release|Any CPU
+		{65AD10B3-470A-4431-BF7F-F6EE96EB4BDB}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

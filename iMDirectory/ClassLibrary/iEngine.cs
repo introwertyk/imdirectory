@@ -12,6 +12,9 @@ using iMDirectory.iSecurityComponent;
 
 namespace iMDirectory
 {
+	/// <summary>
+	/// Main iMDirectory class. Initiates global update process.
+	/// </summary>
 	public class iEngine: IDisposable
 	{
 		#region Constants
@@ -131,11 +134,11 @@ namespace iMDirectory
 										object oNearSite = null;
 										oChildConnector.Configuration.TryGetValue("NearSite", out oNearSite);
 
-										Dictionary<string, object> dicServer = this.GetServer(sDomainFQDN, (string)oNearSite, oCredentials, oObjectClass.iObjectClassID);
+										Dictionary<string, object> dicServer = this.GetServer(sDomainFQDN, (string)oNearSite, oCredentials, oObjectClass.ObjectClassID);
 
 										//get last USN for give GUID from DB
-										iLastHighestCommittedUSN = oSqlOperations.GetLastStoredUSN(oObjectClass.iObjectClassID, dicServer["objectGuid"].ToString(), IsLinking);
-										lAttributesToLoad = oSqlOperations.GetAttributesToLoad(oObjectClass.iObjectClassID);
+										iLastHighestCommittedUSN = oSqlOperations.GetLastStoredUSN(oObjectClass.ObjectClassID, dicServer["objectGuid"].ToString(), IsLinking);
+										lAttributesToLoad = oSqlOperations.GetAttributesToLoad(oObjectClass.ObjectClassID);
 
 										long iHighestCommittedUSN = Convert.ToInt64(dicServer["highestCommittedUSN"]);
 
@@ -159,7 +162,7 @@ namespace iMDirectory
 												//retrieve change deltas from AD DS
 												ConcurrentQueue<Dictionary<string, string>> fifoDeltas = oLdapOperations.GetDirectoryDelta(iLastHighestCommittedUSN, oObjectClass.Filter, lAttributesToLoad, sDelimiter, false);
 												//insert object updates
-												oSqlOperations.PushObjectDeltas(oObjectClass.TableContext, oObjectClass.iObjectClassID, fifoDeltas, iEngineConnectors.iActiveDirectory.NativeConfiguration.PRIMARY_LDAP_KEY);
+												oSqlOperations.PushObjectDeltas(oObjectClass.TableContext, oObjectClass.ObjectClassID, fifoDeltas, iEngineConnectors.iActiveDirectory.NativeConfiguration.PRIMARY_LDAP_KEY);
 
 												//process deletions
 
@@ -168,7 +171,7 @@ namespace iMDirectory
 												oSqlOperations.PushDeletions(oObjectClass, fifoDeltasPhantom, iEngineConnectors.iActiveDirectory.NativeConfiguration.PRIMARY_LDAP_KEY);
 
 												//save current HighestCommittedUsn
-												oSqlOperations.SetHighestCommittedUSN(oObjectClass.iObjectClassID, oChildConnector.DomainFQDN, sServerFQDN, dicServer["objectGuid"].ToString(), Convert.ToInt64(dicServer["highestCommittedUSN"]), false);
+												oSqlOperations.SetHighestCommittedUSN(oObjectClass.ObjectClassID, oChildConnector.DomainFQDN, sServerFQDN, dicServer["objectGuid"].ToString(), Convert.ToInt64(dicServer["highestCommittedUSN"]), false);
 											}
 											else
 											{
@@ -179,7 +182,7 @@ namespace iMDirectory
 													//save current HighestCommittedUsn
 													oSqlOperations.PushLinksDeltas(oObjectClass, fifoDeltas);
 
-													oSqlOperations.SetHighestCommittedUSN(oObjectClass.iObjectClassID, oChildConnector.DomainFQDN, sServerFQDN, dicServer["objectGuid"].ToString(), Convert.ToInt64(dicServer["highestCommittedUSN"]), true);
+													oSqlOperations.SetHighestCommittedUSN(oObjectClass.ObjectClassID, oChildConnector.DomainFQDN, sServerFQDN, dicServer["objectGuid"].ToString(), Convert.ToInt64(dicServer["highestCommittedUSN"]), true);
 												}
 											}
 										}
@@ -311,7 +314,7 @@ namespace iMDirectory
 							this.oConfiguration.Connectors.Add(iConnectorID, oConnector);
 						}
 
-						oConnector.iConnectorID = iConnectorID;
+						oConnector.ConnectorID = iConnectorID;
 						oConnector.DomainFQDN = oConnRes["DomainFQDN"] == DBNull.Value ? String.Empty : oConnRes["DomainFQDN"].ToString();
 						oConnector.Type = oConnRes["Type"] == DBNull.Value ? String.Empty : oConnRes["Type"].ToString();
 						oConnector.Category = oConnRes["Category"] == DBNull.Value ? String.Empty : oConnRes["Category"].ToString();
@@ -345,7 +348,7 @@ namespace iMDirectory
 								oConnector.ObjectClasses.Add(oObjectClass);
 							}
 
-							oObjectClass.iObjectClassID = iObjectClassID;
+							oObjectClass.ObjectClassID = iObjectClassID;
 							oObjectClass.ObjectClass = oClassRes["ObjectClass"].ToString();
 							oObjectClass.TableContext = oClassRes["TableContext"].ToString();
 							oObjectClass.Filter = oClassRes["Filter"].ToString();
@@ -369,7 +372,7 @@ namespace iMDirectory
 								this.oConfiguration.Linking.Add(iLinkingAttributeID, oLinking);
 							}
 
-							oLinking.iLinkingAttributeID = iLinkingAttributeID;
+							oLinking.LinkingAttributeID = iLinkingAttributeID;
 							oLinking.ForwardLink = oLinkRes["ForwardLink"].ToString();
 							oLinking.BackLink = oLinkRes["BackLink"].ToString();
 							oLinking.LinkedWith = oLinkRes["LinkedWith"].ToString();
@@ -398,7 +401,7 @@ namespace iMDirectory
 						//Collect linking configuration
 						foreach (iEngineConfiguration.Class oObjectClass in this.oConfiguration.Classes.Values)
 						{
-							foreach (Dictionary<string, object> oLinkRes in oSql.RetrieveData(String.Format("EXEC spGetLinkingAttributesForLinkedClass @iFwdObjectClassID={0}", oObjectClass.iObjectClassID)))
+							foreach (Dictionary<string, object> oLinkRes in oSql.RetrieveData(String.Format("EXEC spGetLinkingAttributesForLinkedClass @iFwdObjectClassID={0}", oObjectClass.ObjectClassID)))
 							{
 								int iLinkingAttributeID = Convert.ToInt32(oLinkRes["iLinkingAttributeID"]);
 
@@ -412,7 +415,7 @@ namespace iMDirectory
 								}
 							}
 
-							foreach (Dictionary<string, object> oLinkRes in oSql.RetrieveData(String.Format("EXEC spGetLinkingAttributesForLinkedClass @iBckObjectClassID={0}", oObjectClass.iObjectClassID)))
+							foreach (Dictionary<string, object> oLinkRes in oSql.RetrieveData(String.Format("EXEC spGetLinkingAttributesForLinkedClass @iBckObjectClassID={0}", oObjectClass.ObjectClassID)))
 							{
 								int iLinkingAttributeID = Convert.ToInt32(oLinkRes["iLinkingAttributeID"]);
 

@@ -11,6 +11,11 @@ using iMDirectory.iSecurityComponent;
 
 namespace iMDirectory.iEngineConnectors.iActiveDirectory
 {
+	/// <summary>
+	/// Retrieves data from MS AD(DS) casted to correct types accepted for MS SQL DB.
+	/// Supports deltas updates based on stored last synchronization state.
+	/// Most of the operations are processed asynchronously with multithreading.
+	/// </summary>
 	public class Operations : IDisposable
 	{
 		#region Constants
@@ -524,6 +529,11 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 		#endregion
 
 		#region Classes
+		/// <summary>
+		/// Opens and closes LDAP connection with end system.
+		/// Delivers initiated open connections for optimized processing.
+		/// Used for multi-threading where more than one LDAP connection shoudl be used to increase number of simultaneous LDAP requests.
+		/// </summary>
 		private class LdapConnectionsProvider : IDisposable
 		{
 			#region Variables
@@ -625,6 +635,10 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 			#endregion
 		}
 
+		/// <summary>
+		/// Class for linking attribute update retrieved from MS AD(DS).
+		/// Allows storying linking updates for further processing and MS SQL DB updates.
+		/// </summary>
 		public class LinkingUpdate
 		{
 			#region Variables
@@ -680,11 +694,12 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 				}
 			}
 			#endregion
-
-			#region Private Methods
-			#endregion
 		}
 
+		/// <summary>
+		/// Class for attributes update retrieved from MS AD(DS).
+		/// Allows storying attribute updates for further processing and MS SQL DB updates.
+		/// </summary>
 		public class AttributeValueUpdate
 		{
 			#region Variables

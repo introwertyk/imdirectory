@@ -4,46 +4,37 @@ using System.Diagnostics;
 
 namespace iMDirectory.iEngineConfiguration
 {
+	/// <summary>
+	/// Component configuration class.
+	/// Initiated based on complete component DB configuration.
+	/// </summary>
 	public class Configuration
 	{
 		#region Variables
-		private Dictionary<int, Connector> dicConnectors;
-		private Dictionary<int, Class> dicObjectClasses;
-		private Dictionary<int, Linking> dicLinkingAttributes;
-
 		public Dictionary<int, Connector> Connectors
 		{
-			get
-			{
-				return this.dicConnectors;
-			}
+			get;
+			private set;
 		}
 		public Dictionary<int, Class> Classes
 		{
-			get
-			{
-				return this.dicObjectClasses;
-			}
+			get;
+			private set;
 		}
 		public Dictionary<int, Linking> Linking
 		{
-			get
-			{
-				return this.dicLinkingAttributes;
-			}
+			get;
+			private set;
 		}
 		#endregion
 
 		#region Constructors
 		public Configuration()
 		{
-			this.dicConnectors = new Dictionary<int, Connector>();
-			this.dicObjectClasses = new Dictionary<int, Class>();
-			this.dicLinkingAttributes = new Dictionary<int, Linking>();
+			this.Connectors = new Dictionary<int, Connector>();
+			this.Classes = new Dictionary<int, Class>();
+			this.Linking = new Dictionary<int, Linking>();
 		}
-		#endregion
-
-		#region Methods
 		#endregion
 	}
 }

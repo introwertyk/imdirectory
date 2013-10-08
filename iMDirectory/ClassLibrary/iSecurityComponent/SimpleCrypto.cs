@@ -5,7 +5,11 @@ using System.Security;
 
 namespace iMDirectory.iSecurityComponent
 {
-	public class SimpleCrypto : IDisposable //XORFF Encryption (ISSpyra)
+	/// <summary>
+	/// Simple encryping class. Encrypted credentials with this class are not considered to be secure.
+	/// XORFF Encryption (ISSpyra)
+	/// </summary>
+	public class SimpleCrypto : IDisposable
 	{
 		#region Private Variables
 		private bool bDisposed;

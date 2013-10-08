@@ -5,6 +5,10 @@ using System.Diagnostics;
 
 namespace iMDirectory.iEngineConnectors.iSqlDatabase
 {
+	/// <summary>
+	/// Basic MS SQL methods class.
+	/// Supports asynchronous database data retrieval and synchronous data updates. 
+	/// </summary>
 	public class Sql : IDisposable
 	{
 		#region Variables

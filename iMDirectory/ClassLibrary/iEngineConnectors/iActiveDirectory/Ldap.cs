@@ -7,6 +7,10 @@ using iMDirectory.iSecurityComponent;
 
 namespace iMDirectory.iEngineConnectors.iActiveDirectory
 {
+	/// <summary>
+	/// Basic Ldap methods class. Custom LDAP (S.DS.P) libraries implementation.
+	/// Supports asynchronous directory data retrieval.  
+	/// </summary>
 	public class Ldap : IDisposable
 	{
 		#region Constants
@@ -288,9 +292,6 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 				throw new Exception(string.Format("{0}::{1}", new StackFrame(0, true).GetMethod().Name, eX.Message));
 			}
 		}
-		#endregion
-
-		#region Private Instance Methods
 		#endregion
 
 		#region IDisposable Members

@@ -4,118 +4,62 @@ using System.Diagnostics;
 
 namespace iMDirectory.iEngineConfiguration
 {
+	/// <summary>
+	/// Object Class definition from Configuration context.
+	/// Initiated based on component DB configuration.
+	/// </summary>
 	public class Class
 	{
 		#region Variables
-		private int iiObjectClassID;
-		private string sObjectClass;
-		private string sTableContext;
-		private string sFilter;
-		private string sOtherFilter;
-		private string sSearchRoot;
-		private List<Linking> lForwardLinking;
-		private List<Linking> lBackwardLinking;
-
-		public int iObjectClassID
+		public int ObjectClassID
 		{
-			get
-			{
-				return this.iiObjectClassID;
-			}
-			set
-			{
-				this.iiObjectClassID = value;
-			}
+			get;
+			set;
 		}
 		public string ObjectClass
 		{
-			get
-			{
-				return this.sObjectClass;
-			}
-			set
-			{
-				this.sObjectClass = value;
-			}
+			get;
+			set;
 		}
 		public string TableContext
 		{
-			get
-			{
-				return this.sTableContext;
-			}
-			set
-			{
-				this.sTableContext = value;
-			}
+			get;
+			set;
 		}
 		public string Filter
 		{
-			get
-			{
-				return this.sFilter;
-			}
-			set
-			{
-				this.sFilter = value;
-			}
+			get;
+			set;
 		}
 		public string OtherFilter
 		{
-			get
-			{
-				return this.sOtherFilter;
-			}
-			set
-			{
-				this.sOtherFilter = value;
-			}
+			get;
+			set;
 		}
 		public string SearchRoot
 		{
-			get
-			{
-				return this.sSearchRoot;
-			}
-			set
-			{
-				this.sSearchRoot = value;
-			}
+			get;
+			set;
 		}
 
 		public List<Linking> ForwardLinking
 		{
-			get
-			{
-				return this.lForwardLinking;
-			}
-			set
-			{
-				this.lForwardLinking = value;
-			}
+			get;
+			set;
 		}
 		public List<Linking> BackwardLinking
 		{
-			get
-			{
-				return this.lBackwardLinking;
-			}
-			set
-			{
-				this.lBackwardLinking = value;
-			}
+			get;
+			set;
 		}
 		#endregion
 
 		#region Constructors
 		public Class()
 		{
-			this.lForwardLinking = new List<Linking>();
-			this.lBackwardLinking = new List<Linking>();
+			this.ForwardLinking = new List<Linking>();
+			this.BackwardLinking = new List<Linking>();
 		}
-		#endregion
-
-		#region Methods
 		#endregion
 	}
 }

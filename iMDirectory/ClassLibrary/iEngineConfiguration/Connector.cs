@@ -4,164 +4,96 @@ using System.Diagnostics;
 
 namespace iMDirectory.iEngineConfiguration
 {
+	/// <summary>
+	/// Connector configuration class. Defines end-systems, connection details and connector dependences on other connectors.
+	/// Initiated based on connectors DB configuration.
+	/// </summary>
 	public class Connector
 	{
 		#region Variables
-		private int iiConnectorID;
-		private string sDomainFQDN;
-		private string sType;
-		private string sCategory;
-		private string sVersion;
-		private int iPort;
-		private int iProtocolVersion;
-		private int iPageSize;
-		private List<Class> lObjectClasses;
-		private Dictionary<string, object> dicConfiguration;
-		private Connector oParrentConnector;
-		private List<Connector> lChildConnectors;
-
-		public int iConnectorID
+		public int ConnectorID
 		{
-			get
-			{
-				return this.iiConnectorID;
-			}
-			set
-			{
-				this.iiConnectorID = value;
-			}
+			get;
+			set;
 		}
 		public string DomainFQDN
 		{
-			get
-			{
-				return this.sDomainFQDN;
-			}
-			set
-			{
-				this.sDomainFQDN = value;
-			}
+			get;
+			set;
 		}
 		public string Type
 		{
-			get
-			{
-				return this.sType;
-			}
-			set
-			{
-				this.sType = value;
-			}
+			get;
+			set;
 		}
 		public string Category
 		{
-			get
-			{
-				return this.sCategory;
-			}
-			set
-			{
-				this.sCategory = value;
-			}
+			get;
+			set;
 		}
 		public string Version
 		{
-			get
-			{
-				return this.sVersion;
-			}
-			set
-			{
-				this.sVersion = value;
-			}
+			get;
+			set;
 		}
 		public int Port
 		{
-			get
-			{
-				return this.iPort;
-			}
-			set
-			{
-				this.iPort = value;
-			}
+			get;
+			set;
 		}
 		public int ProtocolVersion
 		{
-			get
-			{
-				return this.iProtocolVersion;
-			}
-			set
-			{
-				this.iProtocolVersion = value;
-			}
+			get;
+			set;
 		}
 		public int PageSize
 		{
-			get
-			{
-				return this.iPageSize;
-			}
-			set
-			{
-				this.iPageSize = value;
-			}
+			get;
+			set;
 		}
 		public List<Class> ObjectClasses
 		{
-			get
-			{
-				return this.lObjectClasses;
-			}
+			get;
+			private set;
 		}
 		public Dictionary<string, object> Configuration
 		{
-			get
-			{
-				return this.dicConfiguration;
-			}
+			get;
+			private set;
 		}
 		public Connector ParrentConnector
 		{
-			get
-			{
-				return this.oParrentConnector;
-			}
-			set
-			{
-				this.oParrentConnector = value;
-			}
+			get;
+			set;
 		}
 		public List<Connector> ChildConnectors
 		{
-			get
-			{
-				return this.lChildConnectors;
-			}
-			set
-			{
-				this.lChildConnectors = value;
-			}
+			get;
+			set;
 		}
 		#endregion
 
 		#region Constructors
 		public Connector()
 		{
-			this.lObjectClasses = new List<Class>();
-			this.dicConfiguration = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-			this.lChildConnectors = new List<Connector>();
+			this.ObjectClasses = new List<Class>();
+			this.Configuration = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+			this.ChildConnectors = new List<Connector>();
 		}
 		#endregion
 
 		#region Methods
+		/// <summary>
+		/// Method tries to retireve child connector.
+		/// Child connector is a definition of a connector that is part of parent connector. It represents MS AD(DS) Domain to Forest relationship.
+		/// If parent connector covers child connector configuration, child connector configuration can be still overwritten.
+		/// </summary>
 		public bool TryGetChildConnector(string DomainFQDN, out Connector oConnector)
 		{
 			try
 			{
 				bool bFound = false;
-				IEnumerator<Connector> enumConnector = this.lChildConnectors.GetEnumerator();
+				IEnumerator<Connector> enumConnector = this.ChildConnectors.GetEnumerator();
 				while (!bFound && enumConnector.MoveNext())
 				{
 					bFound = enumConnector.Current.DomainFQDN.Equals(DomainFQDN, StringComparison.OrdinalIgnoreCase);
@@ -176,6 +108,13 @@ namespace iMDirectory.iEngineConfiguration
 				throw new Exception(string.Format("{0}::{1}", new StackFrame(0, true).GetMethod().Name, eX.Message));
 			}
 		}
+
+		/// <summary>
+		/// Method merges configuration of child connector with parent connector.
+		/// Implements inheritace of generic parent configuration to child configuration.
+		/// Child connector is a definition of a connector that is part of parent connector. It represents MS AD(DS) Domain to Forest relationship.
+		/// If parent connector covers child connector configuration, child connector configuration can be still overwritten.
+		/// </summary>
 		public static Connector MergeConnectors(Connector Parent, Connector Child)
 		{
 			try
