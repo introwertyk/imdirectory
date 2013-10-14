@@ -37,6 +37,15 @@
     <AssemblyOriginatorKeyFile>keyPair.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\..\iCOR3\ClassLibrary\ClassLibrary\iSecurityComponent\Credentials.cs">
+      <Link>iSecurityComponent\Credentials.cs</Link>
+    </Compile>
+    <Compile Include="..\..\iCOR3\ClassLibrary\ClassLibrary\iSecurityComponent\SimpleCrypto.cs">
+      <Link>iSecurityComponent\SimpleCrypto.cs</Link>
+    </Compile>
+    <Compile Include="..\..\iCOR3\ClassLibrary\ClassLibrary\iSqlDatabase\Sql.cs">
+      <Link>iEngineConnectors\iSqlDatabase\Sql.cs</Link>
+    </Compile>
     <Compile Include="iEngine.cs" />
     <Compile Include="iEngineConfiguration\Class.cs" />
     <Compile Include="iEngineConfiguration\Configuration.cs" />
@@ -45,10 +54,7 @@
     <Compile Include="iEngineConnectors\iActiveDirectory\Ldap.cs" />
     <Compile Include="iEngineConnectors\iActiveDirectory\Operations.cs" />
     <Compile Include="iEngineConnectors\iSqlDatabase\Operations.cs" />
-    <Compile Include="iEngineConnectors\iSqlDatabase\Sql.cs" />
     <Compile Include="iEngineConnectors\iActiveDirectory\NativeConfiguration.cs" />
-    <Compile Include="iSecurityComponent\Credentials.cs" />
-    <Compile Include="iSecurityComponent\SimpleCrypto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

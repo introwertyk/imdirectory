@@ -5,6 +5,8 @@ using System.Data;
 using System.Diagnostics;
 using System.Text;
 
+using iCOR3.iSqlDatabase;
+
 namespace iMDirectory.iEngineConnectors.iSqlDatabase
 {
 	/// <summary>

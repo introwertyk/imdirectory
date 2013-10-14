@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.DirectoryServices.Protocols;
 using System.Net;
-using iMDirectory.iSecurityComponent;
+using iCOR3.iSecurityComponent;
 
 namespace iMDirectory.iEngineConnectors.iActiveDirectory
 {

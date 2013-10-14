@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using iMDirectory.iSecurityComponent;
+using iCOR3.iSecurityComponent;
 using System.Collections;
 
 namespace iMDirectory.iEngineConnectors.iActiveDirectory

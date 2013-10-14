@@ -7,7 +7,7 @@ using System.Linq;
 using System.Security.Principal;
 using System.Threading.Tasks;
 
-using iMDirectory.iSecurityComponent;
+using iCOR3.iSecurityComponent;
 
 namespace iMDirectory.iEngineConnectors.iActiveDirectory
 {

@@ -7,8 +7,10 @@ using System.DirectoryServices;
 using System.DirectoryServices.ActiveDirectory;
 using System.Linq;
 
+using iCOR3.iSqlDatabase;
+using iCOR3.iSecurityComponent;
+
 using iMDirectory.iEngineConnectors.iActiveDirectory;
-using iMDirectory.iSecurityComponent;
 
 namespace iMDirectory
 {
@@ -92,10 +94,10 @@ namespace iMDirectory
 				{
 					using (Credentials oRootCredentials = new Credentials())
 					{
-						if (oConnector.Configuration.ContainsKey("Password") && oConnector.Configuration.ContainsKey("Username"))
+						if (oConnector.Configuration.ContainsKey("PASSWORD") && oConnector.Configuration.ContainsKey("USERNAME"))
 						{
-							oRootCredentials.UserName = oConnector.Configuration["Username"].ToString();
-							oRootCredentials.Password = oConnector.Configuration["Password"].ToString();
+							oRootCredentials.UserName = oConnector.Configuration["USERNAME"].ToString();
+							oRootCredentials.Password = oConnector.Configuration["PASSWORD"].ToString();
 						}
 
 						//go through Forest domains and search for dedicated sub-domain connectors
@@ -123,17 +125,17 @@ namespace iMDirectory
 										string sDelimiter;
 
 										object oDelim;
-										sDelimiter = (oChildConnector.Configuration.TryGetValue("Delimiter", out oDelim))
+										sDelimiter = (oChildConnector.Configuration.TryGetValue("DELIMITER", out oDelim))
 											? oDelim.ToString()
 											: DELIMITER;
 
-										if (oChildConnector.Configuration.ContainsKey("Password") && oChildConnector.Configuration.ContainsKey("Username"))
+										if (oChildConnector.Configuration.ContainsKey("PASSWORD") && oChildConnector.Configuration.ContainsKey("USERNAME"))
 										{
-											oCredentials.UserName = oChildConnector.Configuration["Username"].ToString();
-											oCredentials.Password = oChildConnector.Configuration["Password"].ToString();
+											oCredentials.UserName = oChildConnector.Configuration["USERNAME"].ToString();
+											oCredentials.Password = oChildConnector.Configuration["PASSWORD"].ToString();
 										}
 										object oNearSite = null;
-										oChildConnector.Configuration.TryGetValue("NearSite", out oNearSite);
+										oChildConnector.Configuration.TryGetValue("NEAR_SITE", out oNearSite);
 
 										Dictionary<string, object> dicServer = this.GetServer(sDomainFQDN, (string)oNearSite, oCredentials, oObjectClass.ObjectClassID);
 
@@ -294,13 +296,17 @@ namespace iMDirectory
 				throw new Exception(string.Format("{0}::{1}", new StackFrame(0, true).GetMethod().Name, eX.Message));
 			}
 		}
+
+		/// <summary>
+		/// Loads configuration from underlying DB into iEngineConfiguration library classes instances.
+		/// </summary>
 		private void SetConfiguration()
 		{
 			try
 			{
 				this.Configuration = new iEngineConfiguration.Configuration();
 
-				using (iEngineConnectors.iSqlDatabase.Sql oSql = new iEngineConnectors.iSqlDatabase.Sql(ConfigurationManager.ConnectionStrings["iMDirectory"].ConnectionString))
+				using (Sql oSql = new Sql(ConfigurationManager.ConnectionStrings["iMDirectory"].ConnectionString))
 				{
 					//Collect connector definitions
 					foreach (Dictionary<string, object> oConnRes in oSql.RetrieveData("EXEC spGetTarget"))
