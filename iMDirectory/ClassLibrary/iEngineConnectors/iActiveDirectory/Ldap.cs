@@ -71,6 +71,8 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 				this.Port = Port;
 				this.BaseSearchDn = BaseDn;
 
+				this.SearchScope = System.DirectoryServices.Protocols.SearchScope.Subtree;
+
 				this.DomainControllers = new string[] { ServerFQDN };
 			}
 			catch (Exception eX)

@@ -44,6 +44,9 @@ namespace iMDirectory
 		#endregion
 
 		#region Public Methods
+		/// <summary>
+		/// Starts synchronization cycle.
+		/// </summary>
 		public void Start()
 		{
 			foreach (iEngineConfiguration.Connector oConnector in this.Configuration.Connectors.Values)
@@ -96,8 +99,8 @@ namespace iMDirectory
 					{
 						if (oConnector.Configuration.ContainsKey("PASSWORD") && oConnector.Configuration.ContainsKey("USERNAME"))
 						{
-							oRootCredentials.UserName = oConnector.Configuration["USERNAME"].ToString();
-							oRootCredentials.Password = oConnector.Configuration["PASSWORD"].ToString();
+							oRootCredentials.UserName = iCOR3.iSecurityComponent.Encryption.Decrypt( oConnector.Configuration["USERNAME"].ToString() );
+							oRootCredentials.Password = iCOR3.iSecurityComponent.Encryption.Decrypt( oConnector.Configuration["PASSWORD"].ToString() );
 						}
 
 						//go through Forest domains and search for dedicated sub-domain connectors
@@ -131,8 +134,8 @@ namespace iMDirectory
 
 										if (oChildConnector.Configuration.ContainsKey("PASSWORD") && oChildConnector.Configuration.ContainsKey("USERNAME"))
 										{
-											oCredentials.UserName = oChildConnector.Configuration["USERNAME"].ToString();
-											oCredentials.Password = oChildConnector.Configuration["PASSWORD"].ToString();
+											oCredentials.UserName = iCOR3.iSecurityComponent.Encryption.Decrypt( oChildConnector.Configuration["USERNAME"].ToString() );
+											oCredentials.Password = iCOR3.iSecurityComponent.Encryption.Decrypt( oChildConnector.Configuration["PASSWORD"].ToString() );
 										}
 										object oNearSite = null;
 										oChildConnector.Configuration.TryGetValue("NEAR_SITE", out oNearSite);

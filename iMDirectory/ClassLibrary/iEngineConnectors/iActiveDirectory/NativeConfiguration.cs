@@ -475,6 +475,7 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 			{
 				this.DomainControler = ServerFQDN;
 				this.SecureCredentials = SecureCredentials;
+				this.AttributeTypes = new Dictionary<string, AttributeType>(StringComparer.OrdinalIgnoreCase);
 
 				this.GetSchemaAttributes();
 			}

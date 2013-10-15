@@ -40,6 +40,9 @@
     <Compile Include="..\..\iCOR3\ClassLibrary\ClassLibrary\iSecurityComponent\Credentials.cs">
       <Link>iSecurityComponent\Credentials.cs</Link>
     </Compile>
+    <Compile Include="..\..\iCOR3\ClassLibrary\ClassLibrary\iSecurityComponent\Encryption.cs">
+      <Link>iSecurityComponent\Encryption.cs</Link>
+    </Compile>
     <Compile Include="..\..\iCOR3\ClassLibrary\ClassLibrary\iSecurityComponent\SimpleCrypto.cs">
       <Link>iSecurityComponent\SimpleCrypto.cs</Link>
     </Compile>
