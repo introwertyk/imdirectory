@@ -216,13 +216,17 @@ namespace iMDirectory
 
 				using (iEngineConnectors.iActiveDirectory.NativeConfiguration oADConfigurationContext = new NativeConfiguration(sDomainFQDN, oCredentials))
 				{
+
+					//if no NearSite defined use site of the bind server if no GC get any GC
 					if (String.IsNullOrEmpty(sNearSite))
 					{
 						//rewrite to static methods in new release
-						foreach (KeyValuePair<string, object> kvSiteDet in oADConfigurationContext.ServerSite(new string[] { "name" }))
+						object NearSite;
+						if (!oADConfigurationContext.ServerSite(new string[] { "name" }).TryGetValue("name", out NearSite))
 						{
-							sNearSite = kvSiteDet.Value.ToString();
+							throw new Exception(String.Format("Unable to determine Near Site name for domain: {0}", sDomainFQDN));
 						}
+						sNearSite = ( (object[])NearSite )[0].ToString();
 					}
 
 					using (iEngineConnectors.iSqlDatabase.Operations oSqlOperations = new iEngineConnectors.iSqlDatabase.Operations(ConfigurationManager.ConnectionStrings["iMDirectory"].ConnectionString))
@@ -291,8 +295,6 @@ namespace iMDirectory
 					}
 					return dicGlobalCatalog;
 				}
-
-				//if no NearSite defined use site of the bind server if no GC get any GC
 			}
 			catch(Exception eX)
 			{

@@ -78,12 +78,10 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 				{
 					AttributesToLoad.Add(SYNC_METADATA_ATTRIBUTE);
 				}
-
-				string sLdapFilter = String.Format(@"(&(!objectCategory=*)(!sAMAccountType=*)({0}))", LdapFilter);
-
+				
 				if (HighestCommittedUSN > 0)
 				{
-					sLdapFilter = String.Format(@"(&(uSNChanged>={0})({1}))", HighestCommittedUSN, sLdapFilter);
+					LdapFilter = String.Format(@"(&(uSNChanged>={0})({1}))", HighestCommittedUSN, LdapFilter);
 				}
 
 				using (LdapConnectionsProvider oLdapConnections = new LdapConnectionsProvider(this.LdapObject.DomainControllers[0], this.LdapObject.SecureCredentials, this.LdapObject.BaseSearchDn, this.LdapObject.Port))
@@ -92,7 +90,7 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 
 					if (!Deleted)
 					{
-						Parallel.ForEach(this.LdapObject.RetrieveAttributes(sLdapFilter, new string[] { BASE_ATTRIBUTE }, Deleted), (dicRes) =>
+						Parallel.ForEach(this.LdapObject.RetrieveAttributes(LdapFilter, new string[] { BASE_ATTRIBUTE }, Deleted), (dicRes) =>
 						{
 							try
 							{
@@ -117,7 +115,9 @@ namespace iMDirectory.iEngineConnectors.iActiveDirectory
 					}
 					else
 					{
-						Parallel.ForEach(this.LdapObject.RetrieveAttributes(sLdapFilter, new string[] { iEngineConnectors.iActiveDirectory.NativeConfiguration.PRIMARY_LDAP_KEY }, Deleted), (dicRes) =>
+						LdapFilter = String.Format(@"(&({0})(!objectCategory=*)(!sAMAccountType=*))", LdapFilter);
+
+						Parallel.ForEach(this.LdapObject.RetrieveAttributes(LdapFilter, new string[] { iEngineConnectors.iActiveDirectory.NativeConfiguration.PRIMARY_LDAP_KEY }, Deleted), (dicRes) =>
 						{
 							try
 							{
