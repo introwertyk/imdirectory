@@ -11,7 +11,7 @@ namespace iMDirectory.iEngineConfiguration
 	public class Class
 	{
 		#region Variables
-		public int ObjectClassID
+		public Guid ObjectClassID
 		{
 			get;
 			set;

@@ -208,7 +208,7 @@ namespace iMDirectory
 				this.oEventLog.WriteEntry(String.Format("{0}::{1}", new StackFrame(0, true).GetMethod().Name, eX.Message), EventLogEntryType.Error, 3050);
 			}
 		}
-		private Dictionary<string, object> GetServer(string sDomainFQDN, string sNearSite, Credentials oCredentials, int iObjectClassID)
+		private Dictionary<string, object> GetServer(string sDomainFQDN, string sNearSite, Credentials oCredentials, Guid iObjectClassID)
 		{
 			try
 			{
@@ -316,7 +316,7 @@ namespace iMDirectory
 					//Collect connector definitions
 					foreach (Dictionary<string, object> oConnRes in oSql.RetrieveData("EXEC spGetTarget"))
 					{
-						int iConnectorID = Convert.ToInt32(oConnRes["iConnectorID"]);
+						Guid iConnectorID = new Guid(oConnRes["iConnectorID"].ToString());
 
 						iEngineConfiguration.Connector oConnector;
 
@@ -335,10 +335,10 @@ namespace iMDirectory
 						if (oConnRes["ProtocolVersion"] != DBNull.Value) oConnector.ProtocolVersion = Convert.ToInt32(oConnRes["ProtocolVersion"]);
 						if (oConnRes["PageSize"] != DBNull.Value) oConnector.PageSize = Convert.ToInt32(oConnRes["PageSize"]);
 		
-						Dictionary<int, Dictionary<string, object>> dicConfiguration = new Dictionary<int, Dictionary<string, object>>();
+						Dictionary<Guid, Dictionary<string, object>> dicConfiguration = new Dictionary<Guid, Dictionary<string, object>>();
 
 						//Collect connector k/v configuration
-						foreach (Dictionary<string, object> oConfRes in oSql.RetrieveData(String.Format("EXEC spGetTargetConfiguration @iConnectorID={0}", iConnectorID)))
+						foreach (Dictionary<string, object> oConfRes in oSql.RetrieveData(String.Format("EXEC spGetTargetConfiguration @iConnectorID='{0}'", iConnectorID)))
 						{
 							string sKey = oConfRes["KeyName"] == DBNull.Value ? String.Empty : oConfRes["KeyName"].ToString();
 							object oVal = oConfRes["KeyValue"] == DBNull.Value ? null : oConfRes["KeyValue"];
@@ -347,9 +347,9 @@ namespace iMDirectory
 						}
 
 						//Collect classes definition
-						foreach (Dictionary<string, object> oClassRes in oSql.RetrieveData(String.Format("EXEC spGetTargetClasses @iConnectorID={0}", iConnectorID)))
+						foreach (Dictionary<string, object> oClassRes in oSql.RetrieveData(String.Format("EXEC spGetTargetClasses @iConnectorID='{0}'", iConnectorID)))
 						{
-							int iObjectClassID = Convert.ToInt32(oClassRes["iObjectClassID"]);
+							Guid iObjectClassID = new Guid (oClassRes["iObjectClassID"].ToString());
 
 							iEngineConfiguration.Class oObjectClass;
 
@@ -374,7 +374,7 @@ namespace iMDirectory
 						//Collect linking configuration
 						foreach (Dictionary<string, object> oLinkRes in oSql.RetrieveData(String.Format("EXEC spGetLinks")) )
 						{
-							int iLinkingAttributeID = Convert.ToInt32(oLinkRes["iLinkingAttributeID"]);
+							Guid iLinkingAttributeID = new Guid(oLinkRes["iLinkingAttributeID"].ToString());
 
 							iEngineConfiguration.Linking oLinking;
 
@@ -390,8 +390,8 @@ namespace iMDirectory
 							oLinking.LinkedWith = oLinkRes["LinkedWith"].ToString();
 							oLinking.TableContext = oLinkRes["TableContext"].ToString();
 
-							int iFwdObjectClassID = Convert.ToInt32(oLinkRes["iFwdObjectClassID"]);
-							int iBckObjectClassID = Convert.ToInt32(oLinkRes["iBckObjectClassID"]);
+							Guid iFwdObjectClassID = new Guid (oLinkRes["iFwdObjectClassID"].ToString());
+							Guid iBckObjectClassID = new Guid (oLinkRes["iBckObjectClassID"].ToString());
 
 							iEngineConfiguration.Class oObjectClass;
 							if ( this.Configuration.Classes.TryGetValue(iFwdObjectClassID, out oObjectClass) )
@@ -413,9 +413,9 @@ namespace iMDirectory
 						//Collect linking configuration
 						foreach (iEngineConfiguration.Class oObjectClass in this.Configuration.Classes.Values)
 						{
-							foreach (Dictionary<string, object> oLinkRes in oSql.RetrieveData(String.Format("EXEC spGetLinkingAttributesForLinkedClass @iFwdObjectClassID={0}", oObjectClass.ObjectClassID)))
+							foreach (Dictionary<string, object> oLinkRes in oSql.RetrieveData(String.Format("EXEC spGetLinkingAttributesForLinkedClass @iFwdObjectClassID='{0}'", oObjectClass.ObjectClassID)))
 							{
-								int iLinkingAttributeID = Convert.ToInt32(oLinkRes["iLinkingAttributeID"]);
+								Guid iLinkingAttributeID = new Guid(oLinkRes["iLinkingAttributeID"].ToString());
 
 								iEngineConfiguration.Linking oLinking;
 								if (this.Configuration.Linking.TryGetValue(iLinkingAttributeID, out oLinking))
@@ -427,9 +427,9 @@ namespace iMDirectory
 								}
 							}
 
-							foreach (Dictionary<string, object> oLinkRes in oSql.RetrieveData(String.Format("EXEC spGetLinkingAttributesForLinkedClass @iBckObjectClassID={0}", oObjectClass.ObjectClassID)))
+							foreach (Dictionary<string, object> oLinkRes in oSql.RetrieveData(String.Format("EXEC spGetLinkingAttributesForLinkedClass @iBckObjectClassID='{0}'", oObjectClass.ObjectClassID)))
 							{
-								int iLinkingAttributeID = Convert.ToInt32(oLinkRes["iLinkingAttributeID"]);
+								Guid iLinkingAttributeID = new Guid(oLinkRes["iLinkingAttributeID"].ToString());
 
 								iEngineConfiguration.Linking oLinking;
 								if (this.Configuration.Linking.TryGetValue(iLinkingAttributeID, out oLinking))
@@ -446,8 +446,8 @@ namespace iMDirectory
 					//create parent/child connector relationships
 					foreach (Dictionary<string, object> oConnRes in oSql.RetrieveData("EXEC spGetTarget"))
 					{
-						int iParentConnectorID = oConnRes["iParentConnectorID"] == DBNull.Value ? 0 : Convert.ToInt32(oConnRes["iParentConnectorID"]);
-						int iChildConnectorID = oConnRes["iConnectorID"] == DBNull.Value ? 0 : Convert.ToInt32(oConnRes["iConnectorID"]);
+						Guid iParentConnectorID = oConnRes["iParentConnectorID"] == DBNull.Value ? Guid.Empty : new Guid(oConnRes["iParentConnectorID"].ToString());
+						Guid iChildConnectorID = oConnRes["iConnectorID"] == DBNull.Value ? Guid.Empty : new Guid(oConnRes["iConnectorID"].ToString());
 
 						iEngineConfiguration.Connector oParentConnector;
 						iEngineConfiguration.Connector oChildConnector;

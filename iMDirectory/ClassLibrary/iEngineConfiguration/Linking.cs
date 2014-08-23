@@ -11,7 +11,7 @@ namespace iMDirectory.iEngineConfiguration
 	public class Linking
 	{
 		#region Variables
-		public int LinkingAttributeID
+		public Guid LinkingAttributeID
 		{
 			get;
 			set;

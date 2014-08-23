@@ -11,7 +11,7 @@ namespace iMDirectory.iEngineConfiguration
 	public class Connector
 	{
 		#region Variables
-		public int ConnectorID
+		public Guid ConnectorID
 		{
 			get;
 			set;

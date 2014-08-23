@@ -93,9 +93,9 @@ namespace iMDirectory.iEngineConnectors.iSqlDatabase
 		/// From synchronization meta-data retrieves directory servers GUID(s) used to retrieve changes.
 		/// Requires Object Class ID from given connector context as synchronization is performed per object class.
 		/// </summary>
-		public IEnumerable<Dictionary<string, object>> GetOrderedSyncServers(int ObjectClassID)
+		public IEnumerable<Dictionary<string, object>> GetOrderedSyncServers(Guid ObjectClassID)
 		{
-			return this.SqlObject.RetrieveData(String.Format("EXEC {0} @iObjectClassID={1}", "spGetOrderedSyncServers", ObjectClassID));
+			return this.SqlObject.RetrieveData(String.Format("EXEC {0} @iObjectClassID='{1}'", "spGetOrderedSyncServers", ObjectClassID));
 		}
 
 		/// <summary>
@@ -104,12 +104,12 @@ namespace iMDirectory.iEngineConnectors.iSqlDatabase
 		/// Requires the last used server GUID.
 		/// Data can be retrieved for MS AD(DS) object changes or for linking attribute changes.
 		/// </summary>
-		public long GetLastStoredUSN(int ObjectClassID, string ServerGUID, bool IsLinkingContext)
+		public long GetLastStoredUSN(Guid ObjectClassID, string ServerGUID, bool IsLinkingContext)
 		{
 			try
 			{
 				long iHigestCommittedUsn = 0;
-				IEnumerator<Dictionary<string, object>> enumRes = this.SqlObject.RetrieveData(String.Format("EXEC {0} @iObjectClassID={1}, @ServerGUID='{2}', @IsLinkingContext={3}", "spGetLatestUSN", ObjectClassID, ServerGUID, IsLinkingContext ? 1 : 0)).GetEnumerator();
+				IEnumerator<Dictionary<string, object>> enumRes = this.SqlObject.RetrieveData(String.Format("EXEC {0} @iObjectClassID='{1}', @ServerGUID='{2}', @IsLinkingContext={3}", "spGetLatestUSN", ObjectClassID, ServerGUID, IsLinkingContext ? 1 : 0)).GetEnumerator();
 				if (enumRes.MoveNext())
 				{
 					object oValue;
@@ -130,11 +130,11 @@ namespace iMDirectory.iEngineConnectors.iSqlDatabase
 		/// Stores last HighestCommittedUSN in synchronization meta-data DB.
 		/// HighestCommittedUSN should be stored only when synchronization was completed successfully.
 		/// </summary>
-		public void SetHighestCommittedUSN(int ObjectClassID, string DomainFqdn, string ServerFqdn, string ServerGUID, long UpdateSequenceNumber, bool IsLinkingContext)
+		public void SetHighestCommittedUSN(Guid ObjectClassID, string DomainFqdn, string ServerFqdn, string ServerGUID, long UpdateSequenceNumber, bool IsLinkingContext)
 		{
 			try
 			{
-				string sSqlQuery = String.Format("EXEC {0} @iObjectClassID={1}, @DomainFQDN='{2}', @ServerFQDN='{3}', @ServerGUID='{4}', @UpdateSequenceNumber='{5}', @IsLinkingContext={6}",
+				string sSqlQuery = String.Format("EXEC {0} @iObjectClassID='{1}', @DomainFQDN='{2}', @ServerFQDN='{3}', @ServerGUID='{4}', @UpdateSequenceNumber='{5}', @IsLinkingContext={6}",
 						"spSetLatestUSN",
 						ObjectClassID,
 						DomainFqdn,
@@ -157,13 +157,13 @@ namespace iMDirectory.iEngineConnectors.iSqlDatabase
 		/// Attribute names correspond to table columns names and information is retrieved from DB schema.
 		/// Tables are organized per object class and ObjectClassID is required to recognize table name.
 		/// </summary>
-		public List<string> GetAttributesToLoad(int ObjectClassID)
+		public List<string> GetAttributesToLoad(Guid ObjectClassID)
 		{
 			try
 			{
 				List<string> lAttributeList = new List<string>();
 
-				foreach (Dictionary<string, object> dicRes in this.SqlObject.RetrieveData(String.Format("EXEC {0} @iObjectClassID={1}", "spGetClassAttributes", ObjectClassID)))
+				foreach (Dictionary<string, object> dicRes in this.SqlObject.RetrieveData(String.Format("EXEC {0} @iObjectClassID='{1}'", "spGetClassAttributes", ObjectClassID)))
 				{
 					lAttributeList.Add(dicRes["Attribute"].ToString());
 				}
@@ -179,7 +179,7 @@ namespace iMDirectory.iEngineConnectors.iSqlDatabase
 		/// <summary>
 		/// Writes MS AD(DS) object changes queue into MS SQL DB.
 		/// </summary>
-		public void PushObjectDeltas(string TableName, int ObjectClassID, ConcurrentQueue<Dictionary<string, string>> UpdatesCollection, string IndexingAttributeName)
+		public void PushObjectDeltas(string TableName, Guid ObjectClassID, ConcurrentQueue<Dictionary<string, string>> UpdatesCollection, string IndexingAttributeName)
 		{
 			try
 			{
@@ -195,7 +195,7 @@ WHERE [{1}]='{{1}}'
 IF @@ROWCOUNT=0
 INSERT INTO [{0}]
 ([{{2}}],[{2}])
-VALUES ({{3}},{3})",
+VALUES ({{3}},'{3}')",
 			 TableName,
 			 IndexingAttributeName,
 			 OBJECT_CLASSID_COLUMN,
@@ -303,7 +303,7 @@ VALUES ({{3}},{3})",
 					{
 						if (sbSubQuery.Length == 0)
 						{
-							sbSubQuery.AppendFormat("SELECT _ObjectID, _iObjectClassID FROM dbo.[{0}] WHERE [{1}]='{{0}}' AND [_iObjectClassID]={2}",
+							sbSubQuery.AppendFormat("SELECT _ObjectID, _iObjectClassID FROM dbo.[{0}] WHERE [{1}]='{{0}}' AND [_iObjectClassID]='{2}'",
 								oBckClass.TableContext,
 								LinkingDefinition.LinkedWith,
 								oBckClass.ObjectClassID
@@ -311,7 +311,7 @@ VALUES ({{3}},{3})",
 						}
 						else
 						{
-							sbSubQuery.AppendFormat("UNION ALL SELECT _ObjectID, _iObjectClassID FROM dbo.[{0}] WHERE [{1}]='{{0}}' AND [_iObjectClassID]={2}",
+							sbSubQuery.AppendFormat("UNION ALL SELECT _ObjectID, _iObjectClassID FROM dbo.[{0}] WHERE [{1}]='{{0}}' AND [_iObjectClassID]='{2}'",
 								oBckClass.TableContext,
 								LinkingDefinition.LinkedWith,
 								oBckClass.ObjectClassID
@@ -325,7 +325,7 @@ INSERT INTO [{0}]
 ([iLinkingAttributeID], [iFwdObjectClassID], [iFwdObjectID], [iBckObjectClassID], [iBckObjectID])
 SELECT '{1}',FWD._iObjectClassID,FWD._ObjectID,BCK._iObjectClassID,BCK._ObjectID
 FROM [{2}] FWD, ({3}) BCK
-WHERE (FWD._iObjectClassID={4}) AND (FWD.{5}='{{1}}');",
+WHERE (FWD._iObjectClassID='{4}') AND (FWD.{5}='{{1}}');",
 						LinkingDefinition.TableContext,
 						LinkingDefinition.LinkingAttributeID,
 						oClass.TableContext,
@@ -344,7 +344,7 @@ JOIN [{1}] FWD
 ON (FWD._ObjectID=LNK.iFwdObjectID) AND (FWD._iObjectClassID=LNK.iFwdObjectClassID)
 JOIN ({2}) BCK
 ON (BCK._ObjectID=LNK.iBckObjectID) AND (BCK._iObjectClassID=LNK.iBckObjectClassID)
-WHERE iLinkingAttributeID={3} AND (FWD._iObjectClassID={4}) AND (FWD.{5}='{{1}}');",
+WHERE iLinkingAttributeID='{3}' AND (FWD._iObjectClassID='{4}') AND (FWD.{5}='{{1}}');",
 					LinkingDefinition.TableContext,
 					oClass.TableContext,
 					sbSubQuery,

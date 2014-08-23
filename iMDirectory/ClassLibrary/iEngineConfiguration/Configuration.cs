@@ -11,17 +11,17 @@ namespace iMDirectory.iEngineConfiguration
 	public class Configuration
 	{
 		#region Variables
-		public Dictionary<int, Connector> Connectors
+		public Dictionary<Guid, Connector> Connectors
 		{
 			get;
 			private set;
 		}
-		public Dictionary<int, Class> Classes
+		public Dictionary<Guid, Class> Classes
 		{
 			get;
 			private set;
 		}
-		public Dictionary<int, Linking> Linking
+		public Dictionary<Guid, Linking> Linking
 		{
 			get;
 			private set;
@@ -31,9 +31,9 @@ namespace iMDirectory.iEngineConfiguration
 		#region Constructors
 		public Configuration()
 		{
-			this.Connectors = new Dictionary<int, Connector>();
-			this.Classes = new Dictionary<int, Class>();
-			this.Linking = new Dictionary<int, Linking>();
+			this.Connectors = new Dictionary<Guid, Connector>();
+			this.Classes = new Dictionary<Guid, Class>();
+			this.Linking = new Dictionary<Guid, Linking>();
 		}
 		#endregion
 	}
